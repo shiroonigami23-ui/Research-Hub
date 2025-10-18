@@ -1,206 +1,133 @@
-import { elements, renderProjects, renderResources, showNotification } from './dom.js';
+import { elements, openModal, closeModal, closeAllModals } from './dom.js';
+import { getState, addProject, addResource, deleteProject, deleteResource, updateProject, updateResource, setActiveProject, setSearchQuery, exportData, importData, switchView } from './state.js';
 
-let state = {
-    projects: [],
-    resources: [],
-    activeProjectId: null,
-    searchQuery: '',
-    currentView: 'main', 
-};
+export function addEventListeners() {
 
-function saveState() {
-    localStorage.setItem('researchHubState', JSON.stringify(state));
-}
-
-export function loadInitialState() {
-    const savedState = localStorage.getItem('researchHubState');
-    if (savedState) {
-        state = JSON.parse(savedState);
-    } else {
-        // First time load: create a default project
-        const generalProject = { id: Date.now().toString(), name: 'General' };
-        state.projects.push(generalProject);
-        state.activeProjectId = generalProject.id;
-    }
-    // Ensure currentView is set correctly on load
-    state.currentView = 'main';
-    
-    renderAll();
-}
-
-function getFilteredResources() {
-    const { resources, activeProjectId, searchQuery } = state;
-    let filtered = resources;
-
-    // First, filter by project
-    if (activeProjectId) {
-        filtered = filtered.filter(r => r.projectId === activeProjectId);
-    }
-
-    // Then, filter by search query
-    if (searchQuery) {
-        const lowerCaseQuery = searchQuery.toLowerCase();
-        filtered = filtered.filter(r => 
-            r.notes.toLowerCase().includes(lowerCaseQuery) ||
-            r.url.toLowerCase().includes(lowerCaseQuery) ||
-            r.tags.some(tag => tag.toLowerCase().includes(lowerCaseQuery))
-        );
-    }
-    return filtered;
-}
-
-function renderAll() {
-    const { projects, activeProjectId, resources, searchQuery } = state;
-    renderProjects(projects, activeProjectId);
-    
-    // Get info needed for the new render logic
-    const filteredResources = getFilteredResources();
-    const totalResourcesInProject = resources.filter(r => r.projectId === activeProjectId).length;
-    
-    renderResources(filteredResources, totalResourcesInProject, searchQuery);
-}
-
-export function switchView(viewName) {
-    state.currentView = viewName;
-    
-    if (viewName === 'profile') {
-        elements.mainContent.classList.add('is-hidden');
-        elements.searchContainer.classList.add('is-hidden');
-        elements.profilePage.classList.remove('is-hidden');
-        elements.mainBackground.classList.add('is-hidden');
-        elements.profileBackground.classList.remove('is-hidden');
-    } else { // 'main'
-        elements.mainContent.classList.remove('is-hidden');
-        elements.searchContainer.classList.remove('is-hidden');
-        elements.profilePage.classList.add('is-hidden');
-        elements.mainBackground.classList.remove('is-hidden');
-        elements.profileBackground.classList.add('is-hidden');
-    }
-}
-
-
-// --- DATA MANIPULATION ---
-
-export function addProject(name) {
-    if (!name.trim()) {
-        showNotification('Project name cannot be empty.');
-        return;
-    }
-    state.projects.push({ id: Date.now().toString(), name: name.trim() });
-    saveState();
-    renderProjects(state.projects, state.activeProjectId);
-}
-
-export function addResource(url, notes, tags, projectId) {
-    const tagArray = tags.split(',').map(tag => tag.trim()).filter(Boolean);
-    state.resources.push({ 
-        id: Date.now().toString(), 
-        url, 
-        notes, 
-        tags: tagArray, 
-        projectId 
+    // --- FORMS ---
+    elements.addProjectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        addProject(elements.newProjectName.value);
+        elements.newProjectName.value = '';
     });
-    saveState();
-    renderAll(); // Use renderAll to correctly update empty states
-}
 
-export function deleteProject(projectId) {
-    if (state.projects.length <= 1) {
-        showNotification("Cannot delete the last project.");
-        return;
-    }
-    const resourcesInProject = state.resources.filter(r => r.projectId === projectId);
-    if (resourcesInProject.length > 0) {
-        showNotification("Cannot delete a project with resources in it.");
-        return;
-    }
+    elements.addResourceForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        addResource(
+            elements.resourceUrl.value,
+            elements.resourceNotes.value,
+            elements.resourceTags.value,
+            elements.projectSelect.value
+        );
+        elements.addResourceForm.reset();
+    });
 
-    state.projects = state.projects.filter(p => p.id !== projectId);
-    
-    if (state.activeProjectId === projectId) {
-        state.activeProjectId = state.projects[0].id;
-    }
-    
-    saveState();
-    renderAll();
-}
+    // --- LISTS & GRIDS (Event Delegation) ---
+    elements.projectList.addEventListener('click', (e) => {
+        const projectItem = e.target.closest('.project-item');
+        const editBtn = e.target.closest('.edit-project-btn');
+        const deleteBtn = e.target.closest('.delete-project-btn');
 
-export function deleteResource(resourceId) {
-    state.resources = state.resources.filter(r => r.id !== resourceId);
-    saveState();
-    renderAll(); // Use renderAll to correctly update empty states
-}
-
-export function updateProject(projectId, newName) {
-    const project = state.projects.find(p => p.id === projectId);
-    if (project) {
-        project.name = newName;
-        saveState();
-        renderAll();
-    }
-}
-
-export function updateResource(resourceId, newUrl, newNotes, newTags) {
-    const resource = state.resources.find(r => r.id === resourceId);
-    if (resource) {
-        resource.url = newUrl;
-        resource.notes = newNotes;
-        resource.tags = newTags.split(',').map(tag => tag.trim()).filter(Boolean);
-        saveState();
-        renderAll();
-    }
-}
-
-export function setActiveProject(projectId) {
-    state.activeProjectId = projectId;
-    renderAll();
-}
-
-export function setSearchQuery(query) {
-    state.searchQuery = query;
-    renderAll();
-}
-
-export function exportData() {
-    const dataStr = JSON.stringify(state, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = 'research_hub_backup.json';
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-    showNotification("Data exported successfully!", false);
-}
-
-export function importData(file) {
-    if (!file) {
-        showNotification("No file selected for import.");
-        return;
-    }
-    const reader = new FileReader();
-    reader.onload = function(event) {
-        try {
-            const newState = JSON.parse(event.target.result);
-            if (newState.projects && newState.resources) {
-                state = newState;
-                state.activeProjectId = state.projects[0]?.id || null;
-                state.searchQuery = '';
-                state.currentView = 'main';
-                saveState();
-                loadInitialState(); // Reload and re-render everything
-                switchView('main');
-                showNotification("Data imported successfully!", false);
-            } else {
-                showNotification("Invalid data file format.");
-            }
-        } catch (e) {
-            showNotification("Error reading or parsing the file.");
-            console.error(e);
+        if (editBtn) {
+            const projectId = editBtn.dataset.id;
+            const project = getState().projects.find(p => p.id === projectId);
+            elements.editProjectId.value = project.id;
+            elements.editProjectName.value = project.name;
+            openModal(elements.editProjectModal);
+            return;
         }
-    };
-    reader.readAsText(file);
-}
 
-export const getState = () => state;
+        if (deleteBtn) {
+            const projectId = deleteBtn.dataset.id;
+            if (confirm('Are you sure you want to delete this project?')) {
+                deleteProject(projectId);
+            }
+            return;
+        }
+
+        if (projectItem) {
+            setActiveProject(projectItem.dataset.id);
+        }
+    });
+
+    elements.resourceGrid.addEventListener('click', (e) => {
+        const editBtn = e.target.closest('.edit-resource-btn');
+        const deleteBtn = e.target.closest('.delete-resource-btn');
+        
+        if (editBtn) {
+            const resourceId = editBtn.dataset.id;
+            const resource = getState().resources.find(r => r.id === resourceId);
+            elements.editResourceId.value = resource.id;
+            elements.editResourceUrl.value = resource.url;
+            elements.editResourceNotes.value = resource.notes;
+            elements.editResourceTags.value = resource.tags.join(', ');
+            openModal(elements.editResourceModal);
+            return;
+        }
+
+        if (deleteBtn) {
+            const resourceId = deleteBtn.dataset.id;
+            if (confirm('Are you sure you want to delete this resource?')) {
+                deleteResource(resourceId);
+            }
+            return;
+        }
+    });
+
+    // --- SEARCH ---
+    elements.searchInput.addEventListener('input', (e) => {
+        setSearchQuery(e.target.value);
+    });
+
+    // --- MODALS ---
+    elements.editProjectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        updateProject(elements.editProjectId.value, elements.editProjectName.value);
+        closeModal(elements.editProjectModal);
+    });
+
+    elements.editResourceForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        updateResource(
+            elements.editResourceId.value,
+            elements.editResourceUrl.value,
+            elements.editResourceNotes.value,
+            elements.editResourceTags.value
+        );
+        closeModal(elements.editResourceModal);
+    });
+
+    elements.cancelEditProject.addEventListener('click', () => closeModal(elements.editProjectModal));
+    elements.cancelEditResource.addEventListener('click', () => closeModal(elements.editResourceModal));
+    
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeAllModals();
+            }
+        });
+    });
+
+    // --- PAGE NAVIGATION ---
+    elements.profileButton.addEventListener('click', () => {
+        const { currentView } = getState();
+        if (currentView === 'main') {
+            switchView('profile');
+        } else {
+            switchView('main');
+        }
+    });
+    
+    // --- DATA MANAGEMENT ---
+    elements.exportButton.addEventListener('click', exportData);
+
+    elements.importButton.addEventListener('click', () => {
+        elements.importFileInput.click();
+    });
+
+    elements.importFileInput.addEventListener('change', (e) => {
+        importData(e.target.files[0]);
+        // Reset the input so the 'change' event fires even if the same file is selected again
+        e.target.value = null;
+    });
+}
