@@ -30,8 +30,6 @@ export function saveState() {
 }
 
 // --- STATE MUTATION FUNCTIONS ---
-// (addProject, addResource, updateResource, updateProject, deleteResource, deleteProject functions are unchanged)
-
 export function addProject(name) {
     const newProject = { id: Date.now(), name: name.trim() };
     state.projects.push(newProject);
