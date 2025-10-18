@@ -11,7 +11,8 @@ export const elements = {
     // Display areas
     projectList: document.getElementById('project-list'),
     resourceGrid: document.getElementById('resource-grid'),
-    emptyState: document.getElementById('empty-state'),
+    emptyStateInitial: document.getElementById('empty-state-initial'),
+    emptyStateSearch: document.getElementById('empty-state-search'),
 
     // Search
     searchInput: document.getElementById('search-input'),
@@ -51,7 +52,6 @@ export function renderProjects(projects, activeProjectId) {
     elements.projectSelect.innerHTML = '';
     
     projects.forEach(project => {
-        // Populate the list on the left
         const li = document.createElement('li');
         li.className = `project-item ${project.id === activeProjectId ? 'active' : ''}`;
         li.dataset.id = project.id;
@@ -64,7 +64,6 @@ export function renderProjects(projects, activeProjectId) {
         `;
         elements.projectList.appendChild(li);
 
-        // Populate the dropdown in the form
         const option = document.createElement('option');
         option.value = project.id;
         option.textContent = project.name;
@@ -72,15 +71,39 @@ export function renderProjects(projects, activeProjectId) {
     });
 }
 
-export function renderResources(resources) {
+function showEmptyState(type) {
+    // Hide all empty states first
+    elements.emptyStateInitial.classList.add('hidden');
+    elements.emptyStateSearch.classList.add('hidden');
+    
+    // Un-hide all display flex properties
+    elements.emptyStateInitial.classList.remove('flex', 'flex-col', 'items-center', 'justify-center');
+    elements.emptyStateSearch.classList.remove('flex', 'flex-col', 'items-center', 'justify-center');
+
+    if (type === 'initial') {
+        elements.emptyStateInitial.classList.remove('hidden');
+        elements.emptyStateInitial.classList.add('flex', 'flex-col', 'items-center', 'justify-center');
+    } else if (type === 'search') {
+        elements.emptyStateSearch.classList.remove('hidden');
+        elements.emptyStateSearch.classList.add('flex', 'flex-col', 'items-center', 'justify-center');
+    }
+}
+
+export function renderResources(filteredResources, totalResourcesInProject, searchQuery) {
     elements.resourceGrid.innerHTML = '';
-    if (resources.length === 0) {
-        elements.emptyState.classList.remove('hidden');
-        elements.emptyState.classList.add('flex', 'flex-col', 'items-center', 'justify-center');
+
+    // Hide both empty states by default
+    showEmptyState(null);
+
+    if (totalResourcesInProject === 0) {
+        // This project is genuinely empty
+        showEmptyState('initial');
+    } else if (filteredResources.length === 0 && searchQuery) {
+        // This project has items, but the search found none
+        showEmptyState('search');
     } else {
-        elements.emptyState.classList.add('hidden');
-        elements.emptyState.classList.remove('flex', 'flex-col', 'items-center', 'justify-center');
-        resources.forEach(resource => {
+        // We have resources to display
+        filteredResources.forEach(resource => {
             const card = document.createElement('div');
             card.className = 'resource-card';
             card.dataset.id = resource.id;
@@ -102,6 +125,7 @@ export function renderResources(resources) {
         });
     }
 }
+
 
 export function showNotification(message, isError = true) {
     elements.notification.textContent = message;
