@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="css/components.css">
 
 </head>
-<body class="bg-slate-900 text-slate-200">
+<body class="bg-slate-900 text-slate-300"> <!-- Default text is now slate-300 -->
 
     <div class="video-background-container">
         <video autoplay muted loop playsinline class="video-background">
@@ -30,49 +30,51 @@
             
             <header class="text-center mb-8">
                 <h1 class="text-4xl md:text-5xl font-bold text-white [text-shadow:_0_2px_10px_rgb(0_0_0_/_50%)]">Research Hub</h1>
-                <p class="text-slate-300 mt-2 [text-shadow:_0_1px_5px_rgb(0_0_0_/_50%)]">Your personal dashboard for organizing project resources.</p>
+                <p class="text-slate-400 mt-2 [text-shadow:_0_1px_5px_rgb(0_0_0_/_50%)]">Your personal dashboard for organizing project resources.</p>
             </header>
 
             <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <aside class="lg:col-span-1 space-y-8">
                     <div class="ui-panel">
-                        <h2 class="text-2xl font-semibold mb-4 text-white">My Projects</h2>
+                        <h2 class="text-2xl font-semibold text-white mb-4">My Projects</h2>
                         <ul id="project-list" class="space-y-2"></ul>
                         <form id="add-project-form" class="mt-4 flex gap-2">
-                            <input type="text" id="new-project-name" class="futuristic-input w-full text-white placeholder-slate-400" placeholder="New Project Name..." required>
-                            <button type="submit" class="futuristic-btn btn-primary text-white font-bold py-2 px-4 rounded-md">Add</button>
+                            <!-- Input text is now slate-200 -->
+                            <input type="text" id="new-project-name" class="futuristic-input w-full text-slate-200 placeholder-slate-500" placeholder="New Project Name..." required>
+                            <button type="submit" class="futuristic-btn btn-primary text-slate-200 font-bold py-2 px-4 rounded-md">Add</button>
                         </form>
                     </div>
 
                     <div class="ui-panel">
-                        <h2 class="text-2xl font-semibold mb-4 text-white">Add New Resource</h2>
+                        <h2 class="text-2xl font-semibold text-white mb-4">Add New Resource</h2>
                         <form id="add-resource-form" class="space-y-4">
                             <div>
-                                <label for="resource-url" class="block text-sm font-medium text-slate-300 mb-1">URL</label>
-                                <input type="url" id="resource-url" class="futuristic-input w-full text-white" placeholder="https://example.com" required>
+                                <!-- Labels are now a softer slate-400 -->
+                                <label for="resource-url" class="block text-sm font-medium text-slate-400 mb-1">URL</label>
+                                <input type="url" id="resource-url" class="futuristic-input w-full text-slate-200" placeholder="https://example.com" required>
                             </div>
                             <div>
-                                <label for="resource-notes" class="block text-sm font-medium text-slate-300 mb-1">Notes</label>
-                                <textarea id="resource-notes" rows="3" class="futuristic-input w-full text-white" placeholder="Briefly describe why this link is useful..."></textarea>
+                                <label for="resource-notes" class="block text-sm font-medium text-slate-400 mb-1">Notes</label>
+                                <textarea id="resource-notes" rows="3" class="futuristic-input w-full text-slate-200" placeholder="Briefly describe why this link is useful..."></textarea>
                             </div>
                             <div>
-                                <label for="resource-tags" class="block text-sm font-medium text-slate-300 mb-1">Tags (comma-separated)</label>
-                                <input type="text" id="resource-tags" class="futuristic-input w-full text-white" placeholder="e.g. primary-source, data">
+                                <label for="resource-tags" class="block text-sm font-medium text-slate-400 mb-1">Tags (comma-separated)</label>
+                                <input type="text" id="resource-tags" class="futuristic-input w-full text-slate-200" placeholder="e.g. primary-source, data">
                             </div>
                             <div>
-                                <label for="project-select" class="block text-sm font-medium text-slate-300 mb-1">Assign to Project</label>
-                                <select id="project-select" class="futuristic-input w-full text-white"></select>
+                                <label for="project-select" class="block text-sm font-medium text-slate-400 mb-1">Assign to Project</label>
+                                <select id="project-select" class="futuristic-input w-full text-slate-200"></select>
                             </div>
-                            <button type="submit" class="futuristic-btn btn-success w-full text-white font-bold py-2 px-4 rounded-md">Save Resource</button>
+                            <button type="submit" class="futuristic-btn btn-success w-full text-slate-200 font-bold py-2 px-4 rounded-md">Save Resource</button>
                         </form>
                     </div>
                 </aside>
 
                 <section class="lg:col-span-2">
                     <div class="mb-6 relative">
-                         <input type="text" id="search-input" class="futuristic-input w-full text-white pl-10" placeholder="Search resources by notes, URL, or tags...">
+                         <input type="text" id="search-input" class="futuristic-input w-full text-slate-200 pl-10" placeholder="Search resources by notes, URL, or tags...">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0_0_24_24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <svg class="h-5 w-5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </div>
                     </div>
 
@@ -89,24 +91,24 @@
     
     <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
         <div class="ui-panel w-full max-w-lg modal-content">
-            <h2 class="text-2xl font-semibold mb-4 text-white">Edit Resource</h2>
+            <h2 class="text-2xl font-semibold text-white mb-4">Edit Resource</h2>
             <form id="edit-resource-form" class="space-y-4">
                 <input type="hidden" id="edit-resource-id">
                 <div>
-                    <label for="edit-resource-url" class="block text-sm font-medium text-slate-300 mb-1">URL</label>
-                    <input type="url" id="edit-resource-url" class="futuristic-input w-full text-white" required>
+                    <label for="edit-resource-url" class="block text-sm font-medium text-slate-400 mb-1">URL</label>
+                    <input type="url" id="edit-resource-url" class="futuristic-input w-full text-slate-200" required>
                 </div>
                 <div>
-                    <label for="edit-resource-notes" class="block text-sm font-medium text-slate-300 mb-1">Notes</label>
-                    <textarea id="edit-resource-notes" rows="3" class="futuristic-input w-full text-white"></textarea>
+                    <label for="edit-resource-notes" class="block text-sm font-medium text-slate-400 mb-1">Notes</label>
+                    <textarea id="edit-resource-notes" rows="3" class="futuristic-input w-full text-slate-200"></textarea>
                 </div>
                 <div>
-                    <label for="edit-resource-tags" class="block text-sm font-medium text-slate-300 mb-1">Tags (comma-separated)</label>
-                    <input type="text" id="edit-resource-tags" class="futuristic-input w-full text-white">
+                    <label for="edit-resource-tags" class="block text-sm font-medium text-slate-400 mb-1">Tags (comma-separated)</label>
+                    <input type="text" id="edit-resource-tags" class="futuristic-input w-full text-slate-200">
                 </div>
                 <div class="flex gap-4">
-                    <button type="button" id="cancel-edit-resource" class="futuristic-btn btn-secondary w-full text-white font-bold py-2 px-4 rounded-md">Cancel</button>
-                    <button type="submit" class="futuristic-btn btn-success w-full text-white font-bold py-2 px-4 rounded-md">Save Changes</button>
+                    <button type="button" id="cancel-edit-resource" class="futuristic-btn btn-secondary w-full text-slate-200 font-bold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="futuristic-btn btn-success w-full text-slate-200 font-bold py-2 px-4 rounded-md">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -114,16 +116,16 @@
 
     <div id="edit-project-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
         <div class="ui-panel w-full max-w-md modal-content">
-            <h2 class="text-2xl font-semibold mb-4 text-white">Rename Project</h2>
+            <h2 class="text-2xl font-semibold text-white mb-4">Rename Project</h2>
             <form id="edit-project-form" class="space-y-4">
                 <input type="hidden" id="edit-project-id">
                 <div>
-                    <label for="edit-project-name" class="block text-sm font-medium text-slate-300 mb-1">Project Name</label>
-                    <input type="text" id="edit-project-name" class="futuristic-input w-full text-white" required>
+                    <label for="edit-project-name" class="block text-sm font-medium text-slate-400 mb-1">Project Name</label>
+                    <input type="text" id="edit-project-name" class="futuristic-input w-full text-slate-200" required>
                 </div>
                 <div class="flex gap-4">
-                    <button type="button" id="cancel-edit-project" class="futuristic-btn btn-secondary w-full text-white font-bold py-2 px-4 rounded-md">Cancel</button>
-                    <button type="submit" class="futuristic-btn btn-primary w-full text-white font-bold py-2 px-4 rounded-md">Save Name</button>
+                    <button type="button" id="cancel-edit-project" class="futuristic-btn btn-secondary w-full text-slate-200 font-bold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="futuristic-btn btn-primary w-full text-slate-200 font-bold py-2 px-4 rounded-md">Save Name</button>
                 </div>
             </form>
         </div>
