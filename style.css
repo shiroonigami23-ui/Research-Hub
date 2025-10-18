@@ -1,0 +1,38 @@
+/* Set the default font for the entire application */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Simple animation for cards appearing */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.card-animate {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Custom scrollbar for a cleaner, more modern look */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e293b; /* A dark color matching the theme */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #475569; /* A slightly lighter, contrasting color */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b; /* A highlight color for hover state */
+}
