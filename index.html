@@ -37,15 +37,23 @@
     <div class="relative z-10">
         <div class="container mx-auto p-4 md:p-8">
             
-            <header class="text-center mb-8 flex justify-between items-center">
-                <div class="w-10"></div> <!-- Spacer -->
-                <div class="text-center">
-                    <h1 class="text-4xl md:text-5xl font-bold text-white [text-shadow:_0_2px_10px_rgb(0_0_0_/_50%)]">Research Hub</h1>
-                    <p class="text-slate-400 mt-2 [text-shadow:_0_1px_5px_rgb(0_0_0_/_50%)]">Your personal dashboard for organizing project resources.</p>
+            <header class="text-center mb-8">
+                <div class="flex justify-between items-center mb-6">
+                    <div class="w-12"></div> <!-- Spacer -->
+                    <div class="text-center">
+                        <h1 class="text-4xl md:text-5xl font-bold text-white [text-shadow:_0_2px_10px_rgb(0_0_0_/_50%)]">Research Hub</h1>
+                        <p class="text-slate-400 mt-2 [text-shadow:_0_1px_5px_rgb(0_0_0_/_50%)]">Your personal dashboard for organizing project resources.</p>
+                    </div>
+                    <button id="profile-button" class="w-12 h-12 rounded-full overflow-hidden border-2 border-slate-600 hover:border-sky-400 transition">
+                       <img src="default.png" alt="Profile" class="w-full h-full object-cover">
+                    </button>
                 </div>
-                <button id="profile-button" class="text-slate-300 hover:text-white transition">
-                    <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                </button>
+                <div id="search-container" class="max-w-2xl mx-auto relative">
+                    <input type="text" id="search-input" class="futuristic-input w-full text-slate-200 pl-10" placeholder="Search all resources...">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    </div>
+                </div>
             </header>
 
             <!-- ======================= MAIN CONTENT ======================= -->
@@ -85,13 +93,6 @@
                 </aside>
 
                 <section class="lg:col-span-2">
-                    <div class="mb-6 relative">
-                         <input type="text" id="search-input" class="futuristic-input w-full text-slate-200 pl-10" placeholder="Search resources by notes, URL, or tags...">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                        </div>
-                    </div>
-
                     <div id="resource-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                      <div id="empty-state" class="hidden text-center py-20">
                         <svg class="mx-auto h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z" /></svg>
@@ -103,10 +104,6 @@
 
             <!-- ======================= PROFILE PAGE ======================= -->
             <section id="profile-page" class="page-view is-hidden max-w-4xl mx-auto text-center">
-                 <button id="back-button" class="absolute top-8 left-8 text-slate-300 hover:text-white transition">
-                    <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                </button>
-                
                 <div class="flex flex-col items-center">
                     <img src="default.png" alt="Profile Picture" class="w-32 h-32 rounded-full border-4 border-slate-700/50 object-cover mb-4">
                     <h2 class="text-4xl font-bold text-white [text-shadow:_0_2px_10px_rgb(0_0_0_/_50%)]">Data Management</h2>
@@ -130,7 +127,7 @@
         </div>
     </div>
     
-    <!-- Edit Resource Modal -->
+    <!-- Modals -->
     <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
         <div class="ui-panel w-full max-w-lg modal-content">
             <h2 class="text-2xl font-semibold text-white mb-4">Edit Resource</h2>
@@ -156,7 +153,6 @@
         </div>
     </div>
 
-    <!-- Edit Project Modal -->
     <div id="edit-project-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
         <div class="ui-panel w-full max-w-md modal-content">
             <h2 class="text-2xl font-semibold text-white mb-4">Rename Project</h2>
