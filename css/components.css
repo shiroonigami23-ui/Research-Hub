@@ -1,111 +1,177 @@
-/* --- UI Panels (Glassmorphism) --- */
-.ui-panel {
-    background-color: rgba(30, 41, 59, 0.6); /* slate-800 with 60% opacity */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(100, 116, 139, 0.2); /* slate-500 with 20% opacity */
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    transition: border 0.3s ease;
-}
+/* futuristic-input, futuristic-btn, resource-card, tag styles are unchanged */
 
-.ui-panel:hover {
-    border: 1px solid rgba(56, 189, 248, 0.3); /* sky-400 with 30% opacity */
-}
-
-
-/* --- Resource Card --- */
-.card-animate {
-    background-color: rgba(30, 41, 59, 0.5);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(100, 116, 139, 0.15);
-    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border 0.2s ease-out;
-    animation: fadeIn 0.4s ease-out forwards;
-}
-
-.card-animate:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 191, 255, 0.2);
-    border: 1px solid rgba(56, 189, 248, 0.4);
-}
-
-
-/* --- Futuristic "Glass" Buttons --- */
-.futuristic-btn {
-    background-color: transparent;
-    border: 1px solid rgba(100, 116, 139, 0.4); /* Subtle edge */
-    transition: all 0.2s ease-in-out;
-}
-
-.futuristic-btn:hover {
-    transform: translateY(-2px);
-}
-
-.futuristic-btn.btn-primary:hover {
-    background-color: rgba(56, 189, 248, 0.1); /* sky */
-    border-color: rgba(56, 189, 248, 0.6);
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.5), 0 0 20px rgba(56, 189, 248, 0.3);
-}
-
-.futuristic-btn.btn-success:hover {
-    background-color: rgba(22, 163, 74, 0.1); /* green */
-    border-color: rgba(22, 163, 74, 0.6);
-    box-shadow: 0 0 10px rgba(22, 163, 74, 0.5), 0 0 20px rgba(22, 163, 74, 0.3);
-}
-
-.futuristic-btn.btn-secondary:hover {
-    background-color: rgba(100, 116, 139, 0.2); /* slate */
-    border-color: rgba(100, 116, 139, 0.6);
-}
-
-
-/* --- Futuristic "Invisible" Inputs --- */
 .futuristic-input {
     background-color: transparent;
     border: none;
-    border-bottom: 1px solid rgba(100, 116, 139, 0.3); /* Faint underline */
-    border-radius: 0;
-    padding: 0.5rem 0.2rem;
-    transition: all 0.2s ease-in-out;
-    -webkit-appearance: none; /* Removes default safari styles */
-}
-/* Special handling for select arrow */
-select.futuristic-input {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
-    background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    padding-right: 2.5rem;
+    border-bottom: 1px solid #475569; /* slate-600 */
+    padding: 0.5rem 0.25rem;
+    color: #cbd5e1; /* slate-300 */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    outline: none;
 }
 
 .futuristic-input:focus {
-    outline: none;
-    border-bottom: 1px solid rgba(56, 189, 248, 0.6);
-    box-shadow: 0 5px 15px -5px rgba(56, 189, 248, 0.4);
+    border-color: #38bdf8; /* sky-400 */
+    box-shadow: 0 1px 0 0 #38bdf8;
+}
+
+.futuristic-btn {
+    background-color: transparent;
+    border: 1px solid #475569; /* slate-600 */
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.futuristic-btn:hover {
+    border-color: #7dd3fc; /* sky-300 */
+    background-color: rgba(56, 189, 248, 0.1);
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.3);
+}
+
+.futuristic-btn.btn-primary:hover {
+    border-color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.15);
+}
+
+.futuristic-btn.btn-success:hover {
+    border-color: #4ade80; /* green-400 */
+    background-color: rgba(74, 222, 128, 0.1);
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.3);
+}
+
+.futuristic-btn.btn-secondary:hover {
+    border-color: #94a3b8; /* slate-400 */
+    background-color: rgba(148, 163, 184, 0.1);
+    box-shadow: 0 0 15px rgba(148, 163, 184, 0.2);
+}
+
+/* --- Project List --- */
+.project-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.project-item:hover {
+    background-color: rgba(100, 116, 139, 0.2);
+}
+
+.project-item.active {
+    background-color: rgba(56, 189, 248, 0.1);
+    border-color: #0284c7; /* sky-600 */
+    color: #e2e8f0; /* slate-200 */
+}
+
+.project-item .project-actions {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.project-item:hover .project-actions,
+.project-item.active .project-actions {
+    opacity: 1;
+}
+
+/* --- Resource Card --- */
+.resource-card {
+    position: relative;
+    background-color: rgba(15, 23, 42, 0.6);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid #334155; /* slate-700 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.resource-card:hover {
+    transform: translateY(-5px);
+    border-color: #0ea5e9; /* sky-500 */
+    box-shadow: 0 0 25px rgba(14, 165, 233, 0.3);
+}
+
+.resource-card .card-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.resource-card:hover .card-actions {
+    opacity: 1;
+}
+
+.tag {
+    background-color: #334155; /* slate-700 */
+    color: #94a3b8; /* slate-400 */
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    border-radius: 9999px;
 }
 
 
-/* --- Animations & Modals --- */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* --- NEW STYLES --- */
+
+/* --- Icon Buttons --- */
+.icon-btn {
+    background-color: rgba(30, 41, 59, 0.7);
+    border-radius: 9999px;
+    padding: 0.4rem;
+    color: #94a3b8; /* slate-400 */
+    transition: color 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
-@keyframes fadeInModal {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+.icon-btn:hover {
+    background-color: rgba(14, 165, 233, 0.1);
+    color: #7dd3fc; /* sky-300 */
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+}
+
+.icon-btn svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+/* --- Modal Styles --- */
+@keyframes modal-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .modal-overlay {
-    display: flex;
-    transition: opacity 0.2s ease-in-out;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
 }
 
 .modal-content {
-    animation: fadeInModal 0.2s ease-out forwards;
+    background-color: rgba(15, 23, 42, 0.8); /* slate-900 with alpha */
+    border: 1px solid #334155; /* slate-700 */
+    border-top: 2px solid #0ea5e9; /* sky-500 */
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 30px rgba(14, 165, 233, 0.2);
+    animation: modal-fade-in 0.3s ease-out forwards;
+    overflow: hidden;
+}
+
+.modal-header {
+    padding: 1rem 1.5rem;
+    background-color: rgba(30, 41, 59, 0.5);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f1f5f9; /* slate-100 */
+    border-bottom: 1px solid #334155; /* slate-700 */
 }
