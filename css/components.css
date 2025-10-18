@@ -1,26 +1,26 @@
 /* --- UI Panels (Glassmorphism) --- */
 .ui-panel {
-    background-color: rgba(30, 41, 59, 0.7); /* slate-800 with 70% opacity */
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px); /* For Safari */
-    border: 1px solid rgba(100, 116, 139, 0.3); /* slate-500 with 30% opacity */
-    border-radius: 0.75rem; /* 12px */
-    padding: 1.5rem; /* 24px */
+    background-color: rgba(30, 41, 59, 0.6); /* slate-800 with 60% opacity */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(100, 116, 139, 0.2); /* slate-500 with 20% opacity */
+    border-radius: 0.75rem;
+    padding: 1.5rem;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     transition: border 0.3s ease;
 }
 
 .ui-panel:hover {
-    border: 1px solid rgba(56, 189, 248, 0.4); /* sky-400 with 40% opacity */
+    border: 1px solid rgba(56, 189, 248, 0.3); /* sky-400 with 30% opacity */
 }
 
 
 /* --- Resource Card --- */
 .card-animate {
-    background-color: rgba(30, 41, 59, 0.6);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(100, 116, 139, 0.2);
+    background-color: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(100, 116, 139, 0.15);
     box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.3);
     transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border 0.2s ease-out;
     animation: fadeIn 0.4s ease-out forwards;
@@ -29,24 +29,66 @@
 .card-animate:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 30px rgba(0, 191, 255, 0.2);
-    border: 1px solid rgba(56, 189, 248, 0.5);
+    border: 1px solid rgba(56, 189, 248, 0.4);
 }
 
-/* --- Buttons --- */
+
+/* --- Futuristic "Glass" Buttons --- */
 .futuristic-btn {
-    box-shadow: 0 0 5px rgba(56, 189, 248, 0.5), 0 0 10px rgba(56, 189, 248, 0.3);
+    background-color: transparent;
+    border: 1px solid rgba(100, 116, 139, 0.4); /* Subtle edge */
+    transition: all 0.2s ease-in-out;
 }
+
 .futuristic-btn:hover {
-    box-shadow: 0 0 10px rgba(56, 189, 248, 0.8), 0 0 20px rgba(56, 189, 248, 0.5);
+    transform: translateY(-2px);
 }
 
-/* --- Input Glow Effect --- */
-input:focus, textarea:focus, select:focus {
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+.futuristic-btn.btn-primary:hover {
+    background-color: rgba(56, 189, 248, 0.1); /* sky */
+    border-color: rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.5), 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.futuristic-btn.btn-success:hover {
+    background-color: rgba(22, 163, 74, 0.1); /* green */
+    border-color: rgba(22, 163, 74, 0.6);
+    box-shadow: 0 0 10px rgba(22, 163, 74, 0.5), 0 0 20px rgba(22, 163, 74, 0.3);
+}
+
+.futuristic-btn.btn-secondary:hover {
+    background-color: rgba(100, 116, 139, 0.2); /* slate */
+    border-color: rgba(100, 116, 139, 0.6);
 }
 
 
-/* --- Animations --- */
+/* --- Futuristic "Invisible" Inputs --- */
+.futuristic-input {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(100, 116, 139, 0.3); /* Faint underline */
+    border-radius: 0;
+    padding: 0.5rem 0.2rem;
+    transition: all 0.2s ease-in-out;
+    -webkit-appearance: none; /* Removes default safari styles */
+}
+/* Special handling for select arrow */
+select.futuristic-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+}
+
+.futuristic-input:focus {
+    outline: none;
+    border-bottom: 1px solid rgba(56, 189, 248, 0.6);
+    box-shadow: 0 5px 15px -5px rgba(56, 189, 248, 0.4);
+}
+
+
+/* --- Animations & Modals --- */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -57,7 +99,6 @@ input:focus, textarea:focus, select:focus {
     to { opacity: 1; transform: scale(1); }
 }
 
-/* --- Modal Styles --- */
 .modal-overlay {
     display: flex;
     transition: opacity 0.2s ease-in-out;
