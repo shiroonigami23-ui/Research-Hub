@@ -26,7 +26,6 @@
 
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <aside class="lg:col-span-1 space-y-8">
-                <!-- Left column content remains the same -->
                 <div class="bg-slate-800 rounded-lg p-6 shadow-lg">
                     <h2 class="text-2xl font-semibold mb-4 text-white">My Projects</h2>
                     <ul id="project-list" class="space-y-2"></ul>
@@ -39,7 +38,6 @@
                 <div class="bg-slate-800 rounded-lg p-6 shadow-lg">
                     <h2 class="text-2xl font-semibold mb-4 text-white">Add New Resource</h2>
                     <form id="add-resource-form" class="space-y-4">
-                        <!-- Add resource form content remains the same -->
                         <div>
                             <label for="resource-url" class="block text-sm font-medium text-slate-300 mb-1">URL</label>
                             <input type="url" id="resource-url" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white" placeholder="https://example.com" required>
@@ -62,7 +60,6 @@
             </aside>
 
             <section class="lg:col-span-2">
-                <!-- *** NEW SEARCH BAR *** -->
                 <div class="mb-6 relative">
                     <input type="text" id="search-input" class="w-full bg-slate-800 border border-slate-700 rounded-md pl-10 pr-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Search resources by notes, URL, or tags...">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -80,9 +77,48 @@
         </main>
     </div>
 
-    <!-- Modals and Notification elements remain the same -->
-    <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 modal-overlay"><!-- ... --></div>
-    <div id="edit-project-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 modal-overlay"><!-- ... --></div>
+    <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 modal-overlay">
+        <div class="bg-slate-800 rounded-lg p-6 shadow-2xl w-full max-w-lg modal-content">
+            <h2 class="text-2xl font-semibold mb-4 text-white">Edit Resource</h2>
+            <form id="edit-resource-form" class="space-y-4">
+                <input type="hidden" id="edit-resource-id">
+                <div>
+                    <label for="edit-resource-url" class="block text-sm font-medium text-slate-300 mb-1">URL</label>
+                    <input type="url" id="edit-resource-url" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white" required>
+                </div>
+                <div>
+                    <label for="edit-resource-notes" class="block text-sm font-medium text-slate-300 mb-1">Notes</label>
+                    <textarea id="edit-resource-notes" rows="3" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white"></textarea>
+                </div>
+                <div>
+                    <label for="edit-resource-tags" class="block text-sm font-medium text-slate-300 mb-1">Tags (comma-separated)</label>
+                    <input type="text" id="edit-resource-tags" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white">
+                </div>
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-edit-resource" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-project-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 modal-overlay">
+        <div class="bg-slate-800 rounded-lg p-6 shadow-2xl w-full max-w-md modal-content">
+            <h2 class="text-2xl font-semibold mb-4 text-white">Rename Project</h2>
+            <form id="edit-project-form" class="space-y-4">
+                <input type="hidden" id="edit-project-id">
+                <div>
+                    <label for="edit-project-name" class="block text-sm font-medium text-slate-300 mb-1">Project Name</label>
+                    <input type="text" id="edit-project-name" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white" required>
+                </div>
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-edit-project" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-md">Save Name</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <div id="notification" class="fixed bottom-5 right-5 bg-red-600 text-white py-2 px-5 rounded-lg shadow-lg opacity-0 transition-opacity duration-300"></div>
 
     <script type="module" src="js/main.js"></script>
