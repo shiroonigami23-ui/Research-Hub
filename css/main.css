@@ -1,32 +1,34 @@
 /* Set the default font for the entire application */
 body {
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden; /* Prevent horizontal scrollbar */
 }
 
-/* --- Animations --- */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* --- Video Background --- */
+.video-background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Place it behind all content */
 }
 
-.card-animate {
-    animation: fadeIn 0.3s ease-out forwards;
+.video-background {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure it covers the screen without stretching */
 }
 
-@keyframes fadeInModal {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.9) 100%);
 }
 
-/* --- Modal Styles --- */
-.modal-overlay {
-    display: flex;
-    transition: opacity 0.2s ease-in-out;
-}
-
-.modal-content {
-    animation: fadeInModal 0.2s ease-out forwards;
-}
 
 /* --- Custom Scrollbar --- */
 ::-webkit-scrollbar {
@@ -43,15 +45,5 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #64748b; /* slate-500 */
-}
-
-/* --- Custom Project List Hover --- */
-#project-list .project-item-controls {
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-}
-
-#project-list li:hover .project-item-controls {
-    opacity: 1;
+    background: #0ea5e9; /* sky-500 */
 }
