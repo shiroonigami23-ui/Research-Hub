@@ -1,4 +1,4 @@
-import { elements, renderProjects, renderResources } from './dom.js';
+import { renderProjects, renderResources } from './dom.js';
 import { addEventListeners } from './events.js';
 import { loadInitialState, switchView } from './state.js';
 
