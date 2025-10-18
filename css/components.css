@@ -1,11 +1,55 @@
-/* --- Animations --- */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* --- UI Panels (Glassmorphism) --- */
+.ui-panel {
+    background-color: rgba(30, 41, 59, 0.7); /* slate-800 with 70% opacity */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px); /* For Safari */
+    border: 1px solid rgba(100, 116, 139, 0.3); /* slate-500 with 30% opacity */
+    border-radius: 0.75rem; /* 12px */
+    padding: 1.5rem; /* 24px */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    transition: border 0.3s ease;
 }
 
+.ui-panel:hover {
+    border: 1px solid rgba(56, 189, 248, 0.4); /* sky-400 with 40% opacity */
+}
+
+
+/* --- Resource Card --- */
 .card-animate {
-    animation: fadeIn 0.3s ease-out forwards;
+    background-color: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(100, 116, 139, 0.2);
+    box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border 0.2s ease-out;
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.card-animate:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 191, 255, 0.2);
+    border: 1px solid rgba(56, 189, 248, 0.5);
+}
+
+/* --- Buttons --- */
+.futuristic-btn {
+    box-shadow: 0 0 5px rgba(56, 189, 248, 0.5), 0 0 10px rgba(56, 189, 248, 0.3);
+}
+.futuristic-btn:hover {
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.8), 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+/* --- Input Glow Effect --- */
+input:focus, textarea:focus, select:focus {
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+}
+
+
+/* --- Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInModal {
@@ -15,8 +59,10 @@
 
 /* --- Modal Styles --- */
 .modal-overlay {
-    display: flex; /* Used by default in HTML, but good to be explicit */
+    display: flex;
     transition: opacity 0.2s ease-in-out;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 .modal-content {
