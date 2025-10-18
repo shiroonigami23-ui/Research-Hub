@@ -5,19 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Research Hub</title>
     
-    <!-- PWA Manifest Link -->
     <link rel="manifest" href="manifest.json">
-    
-    <!-- Theme Color for PWA -->
     <meta name="theme-color" content="#0284c7"/>
     
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-slate-900 text-slate-200">
@@ -30,15 +22,11 @@
         </header>
 
         <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-            <!-- Left Column: Controls & Forms -->
             <aside class="lg:col-span-1 space-y-8">
-                
-                <!-- Projects Section -->
                 <div class="bg-slate-800 rounded-lg p-6 shadow-lg">
                     <h2 class="text-2xl font-semibold mb-4 text-white">My Projects</h2>
                     <ul id="project-list" class="space-y-2">
-                        <!-- Project items will be dynamically inserted here by script.js -->
+                        <!-- Project items will be dynamically inserted here -->
                     </ul>
                     <form id="add-project-form" class="mt-4 flex gap-2">
                         <input type="text" id="new-project-name" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="New Project Name..." required>
@@ -46,7 +34,6 @@
                     </form>
                 </div>
 
-                <!-- Add Resource Section -->
                 <div class="bg-slate-800 rounded-lg p-6 shadow-lg">
                     <h2 class="text-2xl font-semibold mb-4 text-white">Add New Resource</h2>
                     <form id="add-resource-form" class="space-y-4">
@@ -59,30 +46,24 @@
                             <textarea id="resource-notes" rows="3" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Briefly describe why this link is useful..."></textarea>
                         </div>
                         <div>
-                            <label for="resource-tags" class="block text-sm font-medium text-slate-300 mb-1">Tags</label>
-                            <input type="text" id="resource-tags" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="e.g. primary-source, data, tutorial">
-                             <p class="text-xs text-slate-500 mt-1">Separate tags with commas.</p>
+                            <label for="resource-tags" class="block text-sm font-medium text-slate-300 mb-1">Tags (comma-separated)</label>
+                            <input type="text" id="resource-tags" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="e.g. primary-source, data">
                         </div>
                         <div>
                             <label for="project-select" class="block text-sm font-medium text-slate-300 mb-1">Assign to Project</label>
-                            <select id="project-select" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-500">
-                                <!-- Project options will be dynamically inserted here by script.js -->
-                            </select>
+                            <select id="project-select" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-sky-500"></select>
                         </div>
                         <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-colors">Save Resource</button>
                     </form>
                 </div>
             </aside>
 
-            <!-- Right Column: Resource Cards -->
             <section class="lg:col-span-2">
                 <div id="resource-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Resource cards will be dynamically inserted here by script.js -->
+                    <!-- Resource cards will be dynamically inserted here -->
                 </div>
                  <div id="empty-state" class="hidden text-center py-20">
-                    <svg class="mx-auto h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z" />
-                    </svg>
+                    <svg class="mx-auto h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2z" /></svg>
                     <h3 class="mt-2 text-lg font-medium text-white">No resources found</h3>
                     <p class="mt-1 text-slate-400">Get started by adding a resource using the form on the left.</p>
                 </div>
@@ -90,20 +71,60 @@
         </main>
     </div>
 
-    <!-- Application Logic -->
-    <script src="script.js"></script>
+    <!-- Edit Resource Modal -->
+    <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 modal-overlay">
+        <div class="bg-slate-800 rounded-lg p-6 shadow-2xl w-full max-w-lg modal-content">
+            <h2 class="text-2xl font-semibold mb-4 text-white">Edit Resource</h2>
+            <form id="edit-resource-form" class="space-y-4">
+                <input type="hidden" id="edit-resource-id">
+                <div>
+                    <label for="edit-resource-url" class="block text-sm font-medium text-slate-300 mb-1">URL</label>
+                    <input type="url" id="edit-resource-url" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white" required>
+                </div>
+                <div>
+                    <label for="edit-resource-notes" class="block text-sm font-medium text-slate-300 mb-1">Notes</label>
+                    <textarea id="edit-resource-notes" rows="3" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white"></textarea>
+                </div>
+                <div>
+                    <label for="edit-resource-tags" class="block text-sm font-medium text-slate-300 mb-1">Tags (comma-separated)</label>
+                    <input type="text" id="edit-resource-tags" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white">
+                </div>
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-edit-resource" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <!-- PWA Service Worker Registration -->
+    <!-- Edit Project Modal -->
+    <div id="edit-project-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 modal-overlay">
+        <div class="bg-slate-800 rounded-lg p-6 shadow-2xl w-full max-w-md modal-content">
+            <h2 class="text-2xl font-semibold mb-4 text-white">Rename Project</h2>
+            <form id="edit-project-form" class="space-y-4">
+                <input type="hidden" id="edit-project-id">
+                <div>
+                    <label for="edit-project-name" class="block text-sm font-medium text-slate-300 mb-1">Project Name</label>
+                    <input type="text" id="edit-project-name" class="w-full bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white" required>
+                </div>
+                <div class="flex gap-4">
+                    <button type="button" id="cancel-edit-project" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-md">Save Name</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Simple Notification Toast -->
+    <div id="notification" class="fixed bottom-5 right-5 bg-red-600 text-white py-2 px-5 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
+        <!-- Message will be inserted here -->
+    </div>
+
+    <script src="script.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(registration => {
-                        console.log('Service Worker registered with scope:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.error('Service Worker registration failed:', error);
-                    });
+                navigator.serviceWorker.register('/sw.js').catch(e => console.error('SW registration failed:', e));
             });
         }
     </script>
