@@ -1,0 +1,57 @@
+/* Set the default font for the entire application */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-animate {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* --- Modal Styles --- */
+.modal-overlay {
+    display: flex;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.modal-content {
+    animation: fadeInModal 0.2s ease-out forwards;
+}
+
+/* --- Custom Scrollbar --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e293b; /* slate-800 */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #475569; /* slate-600 */
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b; /* slate-500 */
+}
+
+/* --- Custom Project List Hover --- */
+#project-list .project-item-controls {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+#project-list li:hover .project-item-controls {
+    opacity: 1;
+}
