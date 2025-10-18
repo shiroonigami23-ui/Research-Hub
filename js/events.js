@@ -10,7 +10,6 @@ export function initializeEventListeners() {
     });
 
     // --- FORM SUBMISSIONS ---
-    // (addProjectForm and addResourceForm listeners are unchanged)
     dom.addProjectForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const name = dom.newProjectNameInput.value;
@@ -59,8 +58,6 @@ export function initializeEventListeners() {
         }
     });
 
-    // The rest of the file (Resource delegation, Modals, Delete Handlers) is unchanged.
-    // ...
     // --- EVENT DELEGATION (Resources) ---
     dom.resourceGrid.addEventListener('click', (e) => {
         const editBtn = e.target.closest('.edit-resource-btn');
