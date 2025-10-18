@@ -1,151 +1,134 @@
-import { state, addProject, addResource, updateResource, updateProject, deleteResource, deleteProject } from './state.js';
-import * as dom from './dom.js';
+import { elements, renderProjects, renderResources, showNotification, openModal, closeModal, closeAllModals } from './dom.js';
+import { getState, addProject, addResource, deleteProject, deleteResource, updateProject, updateResource, setActiveProject, setSearchQuery, exportData, importData, switchView } from './state.js';
 
-export function initializeEventListeners() {
-
-    // --- SEARCH INPUT ---
-    dom.searchInput.addEventListener('input', (e) => {
-        state.searchQuery = e.target.value;
-        dom.renderResources(); // Re-render resources whenever search query changes
-    });
-
+export function addEventListeners() {
     // --- FORM SUBMISSIONS ---
-    dom.addProjectForm.addEventListener('submit', (e) => {
+    elements.addProjectForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const name = dom.newProjectNameInput.value;
-        if (name) {
-            addProject(name);
-            dom.newProjectNameInput.value = '';
-            dom.renderProjects();
-        }
+        addProject(elements.newProjectName.value);
+        elements.newProjectName.value = '';
+        renderProjects();
     });
 
-    dom.addResourceForm.addEventListener('submit', (e) => {
+    elements.addResourceForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const url = document.getElementById('resource-url').value;
-        const notes = document.getElementById('resource-notes').value;
-        const tags = document.getElementById('resource-tags').value;
-        const projectId = dom.projectSelect.value;
-        
-        if (!url || !projectId) return;
-
-        addResource(url, notes, tags, projectId);
-        dom.addResourceForm.reset();
-        dom.renderResources();
+        addResource({
+            url: elements.resourceUrl.value,
+            notes: elements.resourceNotes.value,
+            tags: elements.resourceTags.value,
+            projectId: elements.projectSelect.value,
+        });
+        e.target.reset();
+        renderResources();
     });
-    
-    // --- EVENT DELEGATION (Projects) ---
-    dom.projectList.addEventListener('click', (e) => {
-        const target = e.target;
-        const editBtn = target.closest('.edit-project-btn');
-        const deleteBtn = target.closest('.delete-project-btn');
-        const filterBtn = target.closest('button:not(.edit-project-btn):not(.delete-project-btn)');
 
-        if (editBtn) {
-            const id = parseInt(editBtn.dataset.id);
-            openEditProjectModal(id);
-        } else if (deleteBtn) {
-            const id = parseInt(deleteBtn.dataset.id);
-            handleDeleteProject(id);
-        } else if (filterBtn) {
-            const id = filterBtn.dataset.id;
-            state.activeFilter = (id === 'all') ? 'all' : parseInt(id);
-            // When changing projects, we should clear the search
-            dom.searchInput.value = '';
-            state.searchQuery = '';
-            dom.renderProjects();
-            dom.renderResources();
+    // --- PROJECT LIST INTERACTIONS ---
+    elements.projectList.addEventListener('click', (e) => {
+        const projectItem = e.target.closest('.project-item');
+        if (projectItem && !e.target.closest('button')) {
+            setActiveProject(projectItem.dataset.id);
         }
-    });
 
-    // --- EVENT DELEGATION (Resources) ---
-    dom.resourceGrid.addEventListener('click', (e) => {
-        const editBtn = e.target.closest('.edit-resource-btn');
-        const deleteBtn = e.target.closest('.delete-resource-btn');
-        
-        if (editBtn) {
-            const id = parseInt(editBtn.dataset.id);
-            openEditResourceModal(id);
-        } else if (deleteBtn) {
-            const id = parseInt(deleteBtn.dataset.id);
-            if (confirm('Are you sure you want to delete this resource?')) {
-                deleteResource(id);
-                dom.renderResources();
+        if (e.target.closest('.edit-project-btn')) {
+            const project = getState().projects.find(p => p.id === projectItem.dataset.id);
+            elements.editProjectId.value = project.id;
+            elements.editProjectName.value = project.name;
+            openModal(elements.editProjectModal);
+        }
+
+        if (e.target.closest('.delete-project-btn')) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                deleteProject(projectItem.dataset.id);
+                renderProjects();
+                renderResources();
             }
         }
     });
 
-    // --- MODAL LOGIC & SUBMISSIONS ---
-    dom.editResourceForm.addEventListener('submit', (e) => {
+    // --- RESOURCE GRID INTERACTIONS ---
+    elements.resourceGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.resource-card');
+        if (!card) return;
+        const resourceId = card.dataset.id;
+        
+        if (e.target.closest('.edit-resource-btn')) {
+            const resource = getState().resources.find(r => r.id === resourceId);
+            elements.editResourceId.value = resource.id;
+            elements.editResourceUrl.value = resource.url;
+            elements.editResourceNotes.value = resource.notes;
+            elements.editResourceTags.value = resource.tags.join(', ');
+            openModal(elements.editResourceModal);
+        }
+
+        if (e.target.closest('.delete-resource-btn')) {
+            if (confirm('Are you sure you want to delete this resource?')) {
+                deleteResource(resourceId);
+                renderResources();
+            }
+        }
+    });
+
+    // --- SEARCH ---
+    elements.searchInput.addEventListener('input', (e) => {
+        setSearchQuery(e.target.value);
+    });
+
+    // --- MODAL INTERACTIONS ---
+    elements.editResourceForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const id = parseInt(document.getElementById('edit-resource-id').value);
-        const url = document.getElementById('edit-resource-url').value;
-        const notes = document.getElementById('edit-resource-notes').value;
-        const tags = document.getElementById('edit-resource-tags').value;
-        updateResource(id, url, notes, tags);
-        dom.renderResources();
-        closeEditResourceModal();
+        updateResource({
+            id: elements.editResourceId.value,
+            url: elements.editResourceUrl.value,
+            notes: elements.editResourceNotes.value,
+            tags: elements.editResourceTags.value,
+        });
+        closeModal(elements.editResourceModal);
+        renderResources();
+    });
+
+    elements.editProjectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        updateProject({
+            id: elements.editProjectId.value,
+            name: elements.editProjectName.value,
+        });
+        closeModal(elements.editProjectModal);
+        renderProjects();
+    });
+
+    elements.cancelEditResource.addEventListener('click', () => closeModal(elements.editResourceModal));
+    elements.cancelEditProject.addEventListener('click', () => closeModal(elements.editProjectModal));
+    
+    // Close modals on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeAllModals();
+            }
+        });
+    });
+
+    // --- PAGE NAVIGATION ---
+    elements.profileButton.addEventListener('click', () => {
+        switchView('profile');
+    });
+
+    elements.backButton.addEventListener('click', () => {
+        switchView('main');
+    });
+
+    // --- DATA MANAGEMENT ---
+    elements.exportButton.addEventListener('click', exportData);
+
+    elements.importButton.addEventListener('click', () => {
+        elements.importFileInput.click();
     });
     
-    dom.editProjectForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const id = parseInt(document.getElementById('edit-project-id').value);
-        const newName = document.getElementById('edit-project-name').value;
-        if (newName) {
-            updateProject(id, newName);
-            dom.renderProjects();
-            dom.renderResources(); 
-            closeEditProjectModal();
+    elements.importFileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            importData(file);
         }
+        event.target.value = null;
     });
-
-    // Modal open/close helpers
-    function openEditResourceModal(id) {
-        const resource = state.resources.find(r => r.id === id);
-        if (resource) {
-            document.getElementById('edit-resource-id').value = resource.id;
-            document.getElementById('edit-resource-url').value = resource.url;
-            document.getElementById('edit-resource-notes').value = resource.notes;
-            document.getElementById('edit-resource-tags').value = resource.tags;
-            dom.editResourceModal.classList.remove('hidden');
-        }
-    }
-    
-    function closeEditResourceModal() { dom.editResourceModal.classList.add('hidden'); }
-
-    function openEditProjectModal(id) {
-        const project = state.projects.find(p => p.id === id);
-        if (project) {
-            document.getElementById('edit-project-id').value = project.id;
-            document.getElementById('edit-project-name').value = project.name;
-            dom.editProjectModal.classList.remove('hidden');
-        }
-    }
-    
-    function closeEditProjectModal() { dom.editProjectModal.classList.add('hidden'); }
-    
-    // Cancel buttons and clicking outside the modal
-    dom.cancelEditResourceBtn.addEventListener('click', closeEditResourceModal);
-    dom.editResourceModal.addEventListener('click', (e) => e.target === dom.editResourceModal && closeEditResourceModal());
-    dom.cancelEditProjectBtn.addEventListener('click', closeEditProjectModal);
-    dom.editProjectModal.addEventListener('click', (e) => e.target === dom.editProjectModal && closeEditProjectModal());
-
-    // --- DELETE HANDLERS with safety checks ---
-    function handleDeleteProject(id) {
-        if (id === 1) { // Default project ID
-            dom.showNotification("Cannot delete the default 'General' project.");
-            return;
-        }
-        const hasResources = state.resources.some(r => r.projectId === id);
-        if (hasResources) {
-            dom.showNotification("Cannot delete projects with resources. Move or delete them first.");
-            return;
-        }
-        const projectName = state.projects.find(p => p.id === id)?.name;
-        if (confirm(`Are you sure you want to delete the "${projectName}" project?`)) {
-            deleteProject(id);
-            dom.renderProjects();
-            dom.renderResources();
-        }
-    }
 }
