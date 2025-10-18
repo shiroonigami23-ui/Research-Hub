@@ -1,13 +1,17 @@
-import { loadState } from './state.js';
-import { renderAll } from './ui.js';
-import { initializeEventListeners } from './events.js';
+import { elements, renderProjects, renderResources } from './dom.js';
+import { addEventListeners } from './events.js';
+import { loadInitialState, switchView } from './state.js';
 
-// The main function to initialize the application
+// Initialize the application
 function init() {
-    loadState();
-    renderAll();
-    initializeEventListeners();
+    loadInitialState();
+    addEventListeners();
+    renderProjects();
+    renderResources();
+
+    // Set initial view to main content
+    switchView('main');
 }
 
-// Wait for the DOM to be fully loaded before running the app
+// Start the app once the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', init);
