@@ -2,69 +2,74 @@ import { elements, renderProjects, renderResources, showNotification, openModal,
 import { getState, addProject, addResource, deleteProject, deleteResource, updateProject, updateResource, setActiveProject, setSearchQuery, exportData, importData, switchView } from './state.js';
 
 export function addEventListeners() {
-    // --- FORM SUBMISSIONS ---
+
+    // --- FORMS ---
     elements.addProjectForm.addEventListener('submit', (e) => {
         e.preventDefault();
         addProject(elements.newProjectName.value);
         elements.newProjectName.value = '';
-        renderProjects();
     });
 
     elements.addResourceForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        addResource({
-            url: elements.resourceUrl.value,
-            notes: elements.resourceNotes.value,
-            tags: elements.resourceTags.value,
-            projectId: elements.projectSelect.value,
-        });
-        e.target.reset();
-        renderResources();
+        addResource(
+            elements.resourceUrl.value,
+            elements.resourceNotes.value,
+            elements.resourceTags.value,
+            elements.projectSelect.value
+        );
+        elements.addResourceForm.reset();
     });
 
-    // --- PROJECT LIST INTERACTIONS ---
+    // --- LISTS & GRIDS (Event Delegation) ---
     elements.projectList.addEventListener('click', (e) => {
         const projectItem = e.target.closest('.project-item');
-        if (projectItem && !e.target.closest('button')) {
-            setActiveProject(projectItem.dataset.id);
-        }
+        const editBtn = e.target.closest('.edit-project-btn');
+        const deleteBtn = e.target.closest('.delete-project-btn');
 
-        if (e.target.closest('.edit-project-btn')) {
-            const project = getState().projects.find(p => p.id === projectItem.dataset.id);
+        if (editBtn) {
+            const projectId = editBtn.dataset.id;
+            const project = getState().projects.find(p => p.id === projectId);
             elements.editProjectId.value = project.id;
             elements.editProjectName.value = project.name;
             openModal(elements.editProjectModal);
+            return;
         }
 
-        if (e.target.closest('.delete-project-btn')) {
+        if (deleteBtn) {
+            const projectId = deleteBtn.dataset.id;
             if (confirm('Are you sure you want to delete this project?')) {
-                deleteProject(projectItem.dataset.id);
-                renderProjects();
-                renderResources();
+                deleteProject(projectId);
             }
+            return;
+        }
+
+        if (projectItem) {
+            setActiveProject(projectItem.dataset.id);
         }
     });
 
-    // --- RESOURCE GRID INTERACTIONS ---
     elements.resourceGrid.addEventListener('click', (e) => {
-        const card = e.target.closest('.resource-card');
-        if (!card) return;
-        const resourceId = card.dataset.id;
+        const editBtn = e.target.closest('.edit-resource-btn');
+        const deleteBtn = e.target.closest('.delete-resource-btn');
         
-        if (e.target.closest('.edit-resource-btn')) {
+        if (editBtn) {
+            const resourceId = editBtn.dataset.id;
             const resource = getState().resources.find(r => r.id === resourceId);
             elements.editResourceId.value = resource.id;
             elements.editResourceUrl.value = resource.url;
             elements.editResourceNotes.value = resource.notes;
             elements.editResourceTags.value = resource.tags.join(', ');
             openModal(elements.editResourceModal);
+            return;
         }
 
-        if (e.target.closest('.delete-resource-btn')) {
+        if (deleteBtn) {
+            const resourceId = deleteBtn.dataset.id;
             if (confirm('Are you sure you want to delete this resource?')) {
                 deleteResource(resourceId);
-                renderResources();
             }
+            return;
         }
     });
 
@@ -73,36 +78,31 @@ export function addEventListeners() {
         setSearchQuery(e.target.value);
     });
 
-    // --- MODAL INTERACTIONS ---
-    elements.editResourceForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        updateResource({
-            id: elements.editResourceId.value,
-            url: elements.editResourceUrl.value,
-            notes: elements.editResourceNotes.value,
-            tags: elements.editResourceTags.value,
-        });
-        closeModal(elements.editResourceModal);
-        renderResources();
-    });
-
+    // --- MODALS ---
     elements.editProjectForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        updateProject({
-            id: elements.editProjectId.value,
-            name: elements.editProjectName.value,
-        });
+        updateProject(elements.editProjectId.value, elements.editProjectName.value);
         closeModal(elements.editProjectModal);
-        renderProjects();
     });
 
-    elements.cancelEditResource.addEventListener('click', () => closeModal(elements.editResourceModal));
+    elements.editResourceForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        updateResource(
+            elements.editResourceId.value,
+            elements.editResourceUrl.value,
+            elements.editResourceNotes.value,
+            elements.editResourceTags.value
+        );
+        closeModal(elements.editResourceModal);
+    });
+
     elements.cancelEditProject.addEventListener('click', () => closeModal(elements.editProjectModal));
+    elements.cancelEditResource.addEventListener('click', () => closeModal(elements.editResourceModal));
     
     // Close modals on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
                 closeAllModals();
             }
         });
@@ -110,25 +110,24 @@ export function addEventListeners() {
 
     // --- PAGE NAVIGATION ---
     elements.profileButton.addEventListener('click', () => {
-        switchView('profile');
+        const { currentView } = getState();
+        if (currentView === 'main') {
+            switchView('profile');
+        } else {
+            switchView('main');
+        }
     });
-
-    elements.backButton.addEventListener('click', () => {
-        switchView('main');
-    });
-
+    
     // --- DATA MANAGEMENT ---
     elements.exportButton.addEventListener('click', exportData);
 
     elements.importButton.addEventListener('click', () => {
         elements.importFileInput.click();
     });
-    
-    elements.importFileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            importData(file);
-        }
-        event.target.value = null;
+
+    elements.importFileInput.addEventListener('change', (e) => {
+        importData(e.target.files[0]);
+        // Reset the input so the 'change' event fires even if the same file is selected again
+        e.target.value = null;
     });
 }
