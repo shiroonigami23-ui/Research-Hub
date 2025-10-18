@@ -32,10 +32,12 @@ function getFilteredResources() {
     const { resources, activeProjectId, searchQuery } = state;
     let filtered = resources;
 
+    // First, filter by project
     if (activeProjectId) {
         filtered = filtered.filter(r => r.projectId === activeProjectId);
     }
 
+    // Then, filter by search query
     if (searchQuery) {
         const lowerCaseQuery = searchQuery.toLowerCase();
         filtered = filtered.filter(r => 
@@ -48,8 +50,14 @@ function getFilteredResources() {
 }
 
 function renderAll() {
-    renderProjects(state.projects, state.activeProjectId);
-    renderResources(getFilteredResources());
+    const { projects, activeProjectId, resources, searchQuery } = state;
+    renderProjects(projects, activeProjectId);
+    
+    // Get info needed for the new render logic
+    const filteredResources = getFilteredResources();
+    const totalResourcesInProject = resources.filter(r => r.projectId === activeProjectId).length;
+    
+    renderResources(filteredResources, totalResourcesInProject, searchQuery);
 }
 
 export function switchView(viewName) {
@@ -93,7 +101,7 @@ export function addResource(url, notes, tags, projectId) {
         projectId 
     });
     saveState();
-    renderResources(getFilteredResources());
+    renderAll(); // Use renderAll to correctly update empty states
 }
 
 export function deleteProject(projectId) {
@@ -120,7 +128,7 @@ export function deleteProject(projectId) {
 export function deleteResource(resourceId) {
     state.resources = state.resources.filter(r => r.id !== resourceId);
     saveState();
-    renderResources(getFilteredResources());
+    renderAll(); // Use renderAll to correctly update empty states
 }
 
 export function updateProject(projectId, newName) {
@@ -139,7 +147,7 @@ export function updateResource(resourceId, newUrl, newNotes, newTags) {
         resource.notes = newNotes;
         resource.tags = newTags.split(',').map(tag => tag.trim()).filter(Boolean);
         saveState();
-        renderResources(getFilteredResources());
+        renderAll();
     }
 }
 
@@ -150,7 +158,7 @@ export function setActiveProject(projectId) {
 
 export function setSearchQuery(query) {
     state.searchQuery = query;
-    renderResources(getFilteredResources());
+    renderAll();
 }
 
 export function exportData() {
