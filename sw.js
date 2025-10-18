@@ -1,77 +1,54 @@
-const CACHE_NAME = 'research-hub-cache-v3'; // Bumped version for the new video
-
-// Updated list of files to cache for offline use
-const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  // CSS files
-  '/css/main.css',
-  '/css/components.css',
-  // JS modules
-  '/js/main.js',
-  '/js/dom.js',
-  '/js/events.js',
-  '/js/state.js',
-  // PWA icons
-  '/icon-192.png',
-  '/icon-512.png',
-  '/image.png',
-  // *** NEW: Caching the background video ***
-  '/menu-background.mp4',
-  // External resources
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
+const CACHE_NAME = 'research-hub-v6';
+const urlsToCache = [
+    '/',
+    '/index.html',
+    '/css/main.css',
+    '/css/components.css',
+    '/js/main.js',
+    '/js/dom.js',
+    '/js/state.js',
+    '/js/events.js',
+    '/manifest.json',
+    '/image.png',
+    '/icon-512.png',
+    '/menu-background.mp4',
+    '/profile-background.mp4'
 ];
 
-self.addEventListener('install', (event) => {
-  console.log('Service Worker: Installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Service Worker: Caching app shell');
-        return cache.addAll(URLS_TO_CACHE).catch(err => {
-          console.error('Failed to cache:', err);
-        });
-      })
-  );
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => {
+                console.log('Opened cache');
+                return cache.addAll(urlsToCache);
+            })
+    );
 });
 
-self.addEventListener('activate', (event) => {
-    console.log('Service Worker: Activating...');
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => {
+                if (response) {
+                    return response;
+                }
+                return fetch(event.request);
+            }
+        )
+    );
+});
+
+self.addEventListener('activate', event => {
+    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
-        caches.keys().then((cacheNames) => {
+        caches.keys().then(cacheNames => {
             return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Service Worker: Clearing old cache:', cacheName);
+                cacheNames.map(cacheName => {
+                    if (cacheWhitelist.indexOf(cacheName) === -1) {
                         return caches.delete(cacheName);
                     }
                 })
             );
-        })
-    );
-    return self.clients.claim();
-});
-
-self.addEventListener('fetch', (event) => {
-    // For video, use a cache-first, then network strategy
-    if (event.request.url.endsWith('.mp4')) {
-        event.respondWith(
-            caches.match(event.request).then(cacheResponse => {
-                return cacheResponse || fetch(event.request).then(networkResponse => {
-                    // Optional: You could add the video to cache here if it wasn't pre-cached
-                    return networkResponse;
-                });
-            })
-        );
-        return;
-    }
-
-    // For all other requests, use a standard cache-first strategy
-    event.respondWith(
-        caches.match(event.request)
-        .then((response) => {
-            return response || fetch(event.request);
         })
     );
 });
