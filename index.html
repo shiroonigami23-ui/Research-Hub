@@ -102,24 +102,26 @@
             </main>
 
             <!-- ======================= PROFILE PAGE ======================= -->
-            <section id="profile-page" class="page-view is-hidden max-w-4xl mx-auto">
+            <section id="profile-page" class="page-view is-hidden max-w-4xl mx-auto text-center">
                  <button id="back-button" class="absolute top-8 left-8 text-slate-300 hover:text-white transition">
                     <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </button>
-                <div class="text-center">
-                    <h2 class="text-4xl font-bold text-white [text-shadow:_0_2px_10px_rgb(0_0_0_/_50%)]">Profile & Data Management</h2>
-                    <p class="text-slate-400 mt-2 [text-shadow:_0_1px_5px_rgb(0_0_0_/_50%)]">Manage your application data and preferences.</p>
+                
+                <div class="flex flex-col items-center">
+                    <img src="default.png" alt="Profile Picture" class="w-32 h-32 rounded-full border-4 border-slate-700/50 object-cover mb-4">
+                    <h2 class="text-4xl font-bold text-white [text-shadow:_0_2px_10px_rgb(0_0_0_/_50%)]">Data Management</h2>
+                    <p class="text-slate-400 mt-2 [text-shadow:_0_1px_5px_rgb(0_0_0_/_50%)]">Backup or restore your hub's data.</p>
                 </div>
                 
                 <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div class="ui-panel text-center">
+                    <div class="p-4">
                         <h3 class="text-2xl font-semibold text-white mb-4">Export Data</h3>
-                        <p class="text-slate-400 mb-6">Download all your projects and resources as a single JSON file. Keep it as a backup or to transfer to another device.</p>
+                        <p class="text-slate-400 mb-6">Save all your data to a JSON file.</p>
                         <button id="export-button" class="futuristic-btn btn-primary text-slate-200 font-bold py-2 px-6 rounded-md w-full md:w-auto">Export My Data</button>
                     </div>
-                    <div class="ui-panel text-center">
+                    <div class="p-4">
                         <h3 class="text-2xl font-semibold text-white mb-4">Import Data</h3>
-                        <p class="text-slate-400 mb-6">Load data from a previously exported JSON file. <strong class="text-amber-400">Warning:</strong> This will overwrite all your current data.</p>
+                        <p class="text-slate-400 mb-6">Load data from a backup file.</p>
                         <button id="import-button" class="futuristic-btn btn-secondary text-slate-200 font-bold py-2 px-6 rounded-md w-full md:w-auto">Import from File</button>
                         <input type="file" id="import-file-input" class="hidden" accept=".json">
                     </div>
@@ -128,6 +130,7 @@
         </div>
     </div>
     
+    <!-- Edit Resource Modal -->
     <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
         <div class="ui-panel w-full max-w-lg modal-content">
             <h2 class="text-2xl font-semibold text-white mb-4">Edit Resource</h2>
@@ -153,6 +156,7 @@
         </div>
     </div>
 
+    <!-- Edit Project Modal -->
     <div id="edit-project-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
         <div class="ui-panel w-full max-w-md modal-content">
             <h2 class="text-2xl font-semibold text-white mb-4">Rename Project</h2>
