@@ -1,121 +1,160 @@
-import { state } from './state.js';
+import { getState } from './state.js';
 
-// --- DOM ELEMENT REFERENCES ---
-export const projectList = document.getElementById('project-list');
-export const addProjectForm = document.getElementById('add-project-form');
-export const newProjectNameInput = document.getElementById('new-project-name');
-export const resourceGrid = document.getElementById('resource-grid');
-export const addResourceForm = document.getElementById('add-resource-form');
-export const projectSelect = document.getElementById('project-select');
-export const emptyState = document.getElementById('empty-state');
-export const notification = document.getElementById('notification');
-export const searchInput = document.getElementById('search-input'); // New search input reference
-// Modals
-export const editResourceModal = document.getElementById('edit-resource-modal');
-export const editResourceForm = document.getElementById('edit-resource-form');
-export const cancelEditResourceBtn = document.getElementById('cancel-edit-resource');
-export const editProjectModal = document.getElementById('edit-project-modal');
-export const editProjectForm = document.getElementById('edit-project-form');
-export const cancelEditProjectBtn = document.getElementById('cancel-edit-project');
-
-
-// --- RENDERING FUNCTIONS ---
-export function renderProjects() {
-    projectList.innerHTML = '';
-    projectSelect.innerHTML = '';
-
-    const allFilterItem = document.createElement('li');
-    allFilterItem.innerHTML = `<button data-id="all" class="w-full text-left px-3 py-2 rounded-md ${state.activeFilter === 'all' ? 'bg-sky-600 text-white' : 'hover:bg-slate-700'} transition-colors">All Resources</button>`;
-    projectList.appendChild(allFilterItem);
+export const elements = {
+    // Main form elements
+    addProjectForm: document.getElementById('add-project-form'),
+    newProjectName: document.getElementById('new-project-name'),
+    addResourceForm: document.getElementById('add-resource-form'),
+    resourceUrl: document.getElementById('resource-url'),
+    resourceNotes: document.getElementById('resource-notes'),
+    resourceTags: document.getElementById('resource-tags'),
+    projectSelect: document.getElementById('project-select'),
     
-    state.projects.forEach(project => {
-        const isActive = state.activeFilter === project.id;
-        const listItem = document.createElement('li');
-        listItem.className = `group flex items-center justify-between rounded-md ${isActive ? 'bg-sky-600 text-white' : 'hover:bg-slate-700'}`;
-        
-        listItem.innerHTML = `
-            <button data-id="${project.id}" class="flex-grow text-left px-3 py-2 transition-colors">${project.name}</button>
-            <div class="flex items-center pr-2">
-                <button data-id="${project.id}" class="edit-project-btn p-1 text-slate-400 ${isActive ? 'text-white' : ''} hover:text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" /></svg>
-                </button>
-                <button data-id="${project.id}" class="delete-project-btn p-1 text-slate-400 ${isActive ? 'text-white' : ''} hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </button>
+    // Display areas
+    projectList: document.getElementById('project-list'),
+    resourceGrid: document.getElementById('resource-grid'),
+    emptyState: document.getElementById('empty-state'),
+
+    // Search
+    searchInput: document.getElementById('search-input'),
+
+    // Modals
+    editResourceModal: document.getElementById('edit-resource-modal'),
+    editResourceForm: document.getElementById('edit-resource-form'),
+    editResourceId: document.getElementById('edit-resource-id'),
+    editResourceUrl: document.getElementById('edit-resource-url'),
+    editResourceNotes: document.getElementById('edit-resource-notes'),
+    editResourceTags: document.getElementById('edit-resource-tags'),
+    cancelEditResource: document.getElementById('cancel-edit-resource'),
+
+    editProjectModal: document.getElementById('edit-project-modal'),
+    editProjectForm: document.getElementById('edit-project-form'),
+    editProjectId: document.getElementById('edit-project-id'),
+    editProjectName: document.getElementById('edit-project-name'),
+    cancelEditProject: document.getElementById('cancel-edit-project'),
+
+    // Notifications
+    notification: document.getElementById('notification'),
+
+    // Page Navigation & Data
+    profileButton: document.getElementById('profile-button'),
+    backButton: document.getElementById('back-button'),
+    mainContent: document.getElementById('main-content'),
+    profilePage: document.getElementById('profile-page'),
+    mainBackground: document.getElementById('main-background'),
+    profileBackground: document.getElementById('profile-background'),
+    exportButton: document.getElementById('export-button'),
+    importButton: document.getElementById('import-button'),
+    importFileInput: document.getElementById('import-file-input'),
+};
+
+export function renderProjects() {
+    const { projects, activeProjectId } = getState();
+    elements.projectList.innerHTML = '';
+    elements.projectSelect.innerHTML = '';
+
+    projects.forEach(project => {
+        // Populate the project list in the sidebar
+        const projectItem = document.createElement('li');
+        projectItem.className = `project-item ${project.id === activeProjectId ? 'active' : ''}`;
+        projectItem.dataset.id = project.id;
+        projectItem.innerHTML = `
+            <span class="project-name">${project.name}</span>
+            <div class="project-actions">
+                ${project.id !== 'general' ? `
+                    <button class="edit-project-btn" title="Rename project">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                    </button>
+                    <button class="delete-project-btn" title="Delete project">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                    </button>
+                ` : ''}
             </div>
         `;
-        projectList.appendChild(listItem);
-        
-        const optionItem = document.createElement('option');
-        optionItem.value = project.id;
-        optionItem.textContent = project.name;
-        projectSelect.appendChild(optionItem);
+        elements.projectList.appendChild(projectItem);
+
+        // Populate the dropdown in the "Add Resource" form
+        const option = document.createElement('option');
+        option.value = project.id;
+        option.textContent = project.name;
+        if (project.id === activeProjectId) {
+            option.selected = true;
+        }
+        elements.projectSelect.appendChild(option);
     });
 }
 
 export function renderResources() {
-    resourceGrid.innerHTML = '';
+    const { resources, activeProjectId, searchQuery } = getState();
+    elements.resourceGrid.innerHTML = '';
 
-    // 1. Filter by project
-    let resourcesToDisplay = state.activeFilter === 'all' 
-        ? state.resources 
-        : state.resources.filter(r => r.projectId === state.activeFilter);
-    
-    // 2. Filter by search query
-    const query = state.searchQuery.toLowerCase().trim();
-    if (query) {
-        resourcesToDisplay = resourcesToDisplay.filter(r => 
-            r.notes.toLowerCase().includes(query) ||
-            r.url.toLowerCase().includes(query) ||
-            r.tags.toLowerCase().includes(query)
-        );
+    const filteredResources = resources
+        .filter(resource => activeProjectId === null || resource.projectId === activeProjectId)
+        .filter(resource => {
+            const query = searchQuery.toLowerCase();
+            return resource.url.toLowerCase().includes(query) ||
+                   resource.notes.toLowerCase().includes(query) ||
+                   resource.tags.some(tag => tag.toLowerCase().includes(query));
+        });
+
+    if (filteredResources.length === 0) {
+        elements.emptyState.classList.remove('hidden');
+    } else {
+        elements.emptyState.classList.add('hidden');
     }
 
-    emptyState.classList.toggle('hidden', resourcesToDisplay.length > 0);
-
-    resourcesToDisplay.forEach(resource => {
-        const projectName = state.projects.find(p => p.id === resource.projectId)?.name || 'Unassigned';
-        const tagsHTML = resource.tags.split(',').map(tag => tag.trim() ? `<span class="bg-slate-600 text-sky-300 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">${tag.trim()}</span>` : '').join('');
-
+    filteredResources.forEach(resource => {
         const card = document.createElement('div');
-        card.className = 'bg-slate-800 rounded-lg p-5 shadow-lg flex flex-col card-animate group';
+        card.className = 'resource-card';
+        card.dataset.id = resource.id;
         card.innerHTML = `
-            <div class="flex-grow">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-semibold uppercase tracking-wider text-sky-400">${projectName}</span>
-                    <div class="flex items-center">
-                        <button data-id="${resource.id}" class="edit-resource-btn p-1 text-slate-400 hover:text-sky-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" /></svg>
-                        </button>
-                        <button data-id="${resource.id}" class="delete-resource-btn p-1 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
-                           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="pointer-events: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                        </button>
-                    </div>
+            <div class="card-content">
+                <h3 class="card-title">${resource.notes.substring(0, 50) || 'No Title'}...</h3>
+                <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="card-link">${new URL(resource.url).hostname}</a>
+                <p class="card-notes">${resource.notes.substring(0, 100)}...</p>
+                <div class="card-tags">
+                    ${resource.tags.map(tag => `<span>${tag}</span>`).join('')}
                 </div>
-                <a href="${resource.url}" target="_blank" rel="noopener noreferrer" class="text-lg font-semibold text-white hover:text-sky-400 transition-colors mt-1 mb-3 block break-all">${truncateURL(resource.url)}</a>
-                <p class="text-slate-300 mb-4 whitespace-pre-wrap">${resource.notes || 'No notes for this resource.'}</p>
             </div>
-            <div class="flex-shrink-0">${tagsHTML}</div>
+            <div class="card-actions">
+                <button class="edit-resource-btn" title="Edit resource">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" /></svg>
+                </button>
+                <button class="delete-resource-btn" title="Delete resource">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                </button>
+            </div>
         `;
-        resourceGrid.appendChild(card);
+        elements.resourceGrid.appendChild(card);
     });
 }
 
-function truncateURL(url) {
-    try {
-        const urlObj = new URL(url);
-        let path = urlObj.pathname;
-        if (path.length > 30) path = path.substring(0, 27) + '...';
-        return urlObj.hostname.replace('www.', '') + path;
-    } catch (e) {
-        return url.length > 40 ? url.substring(0, 37) + '...' : url;
+export function showNotification(message, type = 'error') {
+    elements.notification.textContent = message;
+    elements.notification.className = `fixed bottom-5 right-5 text-white py-2 px-5 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 border backdrop-blur-sm`;
+    if (type === 'error') {
+        elements.notification.classList.add('bg-red-600/90', 'border-red-500/50');
+    } else {
+        elements.notification.classList.add('bg-green-600/90', 'border-green-500/50');
     }
+
+    elements.notification.classList.remove('opacity-0');
+    setTimeout(() => {
+        elements.notification.classList.add('opacity-0');
+    }, 3000);
 }
 
-export function showNotification(message) {
-    notification.textContent = message;
-    notification.classList.remove('opacity-0');
-    setTimeout(() => {
-        notification.classList.add('opacity-0');
-    }, 3000);
+export function openModal(modal) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+export function closeModal(modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+export function closeAllModals() {
+    closeModal(elements.editResourceModal);
+    closeModal(elements.editProjectModal);
 }
