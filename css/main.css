@@ -1,53 +1,3 @@
-/* Set the default font for the entire application */
-body {
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden; /* Prevent horizontal scrollbar */
-}
-
-/* --- Video Background --- */
-.video-background-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1; /* Place it behind all content */
-}
-
-.video-background {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Ensure it covers the screen without stretching */
-}
-
-.video-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.6) 0%, rgba(15, 23, 42, 0.9) 100%);
-}
-
-
-/* --- Custom Scrollbar --- */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #1e293b; /* slate-800 */
-}
-
-::-webkit-scrollbar-thumb {
-    background: #475569; /* slate-600 */
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #0ea5e9; /* sky-500 */
-}
-/* Existing styles are unchanged */
 html {
     scroll-behavior: smooth;
 }
@@ -84,12 +34,11 @@ body {
 
 /* --- NEW PAGE VIEW STYLES --- */
 .page-view {
-    display: grid; /* Use grid for main content layout */
     transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
 }
 
 .page-view.is-hidden {
-    display: none;
+    display: none !important;
     opacity: 0;
     transform: translateY(20px);
     pointer-events: none;
