@@ -17,7 +17,6 @@
 </head>
 <body class="bg-slate-900 text-slate-200">
 
-    <!-- *** NEW VIDEO BACKGROUND *** -->
     <div class="video-background-container">
         <video autoplay muted loop playsinline class="video-background">
             <source src="menu-background.mp4" type="video/mp4">
@@ -26,7 +25,6 @@
         <div class="video-overlay"></div>
     </div>
 
-    <!-- The rest of your content is wrapped in a 'relative' container to appear above the video -->
     <div class="relative z-10">
         <div class="container mx-auto p-4 md:p-8">
             
@@ -36,14 +34,13 @@
             </header>
 
             <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- All main content (aside, section) is unchanged -->
                 <aside class="lg:col-span-1 space-y-8">
                     <div class="ui-panel">
                         <h2 class="text-2xl font-semibold mb-4 text-white">My Projects</h2>
                         <ul id="project-list" class="space-y-2"></ul>
                         <form id="add-project-form" class="mt-4 flex gap-2">
-                            <input type="text" id="new-project-name" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="New Project Name..." required>
-                            <button type="submit" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-md transition-all duration-200 futuristic-btn">Add</button>
+                            <input type="text" id="new-project-name" class="futuristic-input w-full text-white placeholder-slate-400" placeholder="New Project Name..." required>
+                            <button type="submit" class="futuristic-btn btn-primary text-white font-bold py-2 px-4 rounded-md">Add</button>
                         </form>
                     </div>
 
@@ -52,30 +49,30 @@
                         <form id="add-resource-form" class="space-y-4">
                             <div>
                                 <label for="resource-url" class="block text-sm font-medium text-slate-300 mb-1">URL</label>
-                                <input type="url" id="resource-url" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white" placeholder="https://example.com" required>
+                                <input type="url" id="resource-url" class="futuristic-input w-full text-white" placeholder="https://example.com" required>
                             </div>
                             <div>
                                 <label for="resource-notes" class="block text-sm font-medium text-slate-300 mb-1">Notes</label>
-                                <textarea id="resource-notes" rows="3" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white" placeholder="Briefly describe why this link is useful..."></textarea>
+                                <textarea id="resource-notes" rows="3" class="futuristic-input w-full text-white" placeholder="Briefly describe why this link is useful..."></textarea>
                             </div>
                             <div>
                                 <label for="resource-tags" class="block text-sm font-medium text-slate-300 mb-1">Tags (comma-separated)</label>
-                                <input type="text" id="resource-tags" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white" placeholder="e.g. primary-source, data">
+                                <input type="text" id="resource-tags" class="futuristic-input w-full text-white" placeholder="e.g. primary-source, data">
                             </div>
                             <div>
                                 <label for="project-select" class="block text-sm font-medium text-slate-300 mb-1">Assign to Project</label>
-                                <select id="project-select" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white"></select>
+                                <select id="project-select" class="futuristic-input w-full text-white"></select>
                             </div>
-                            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition-all duration-200 futuristic-btn">Save Resource</button>
+                            <button type="submit" class="futuristic-btn btn-success w-full text-white font-bold py-2 px-4 rounded-md">Save Resource</button>
                         </form>
                     </div>
                 </aside>
 
                 <section class="lg:col-span-2">
                     <div class="mb-6 relative">
-                        <input type="text" id="search-input" class="w-full bg-slate-800/80 border border-slate-700/80 backdrop-blur-sm rounded-md pl-10 pr-4 py-2 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500">
+                         <input type="text" id="search-input" class="futuristic-input w-full text-white pl-10" placeholder="Search resources by notes, URL, or tags...">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                            <svg class="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0_0_24_24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                         </div>
                     </div>
 
@@ -90,7 +87,6 @@
         </div>
     </div>
     
-    <!-- All modals are unchanged in structure -->
     <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
         <div class="ui-panel w-full max-w-lg modal-content">
             <h2 class="text-2xl font-semibold mb-4 text-white">Edit Resource</h2>
@@ -98,19 +94,19 @@
                 <input type="hidden" id="edit-resource-id">
                 <div>
                     <label for="edit-resource-url" class="block text-sm font-medium text-slate-300 mb-1">URL</label>
-                    <input type="url" id="edit-resource-url" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white" required>
+                    <input type="url" id="edit-resource-url" class="futuristic-input w-full text-white" required>
                 </div>
                 <div>
                     <label for="edit-resource-notes" class="block text-sm font-medium text-slate-300 mb-1">Notes</label>
-                    <textarea id="edit-resource-notes" rows="3" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white"></textarea>
+                    <textarea id="edit-resource-notes" rows="3" class="futuristic-input w-full text-white"></textarea>
                 </div>
                 <div>
                     <label for="edit-resource-tags" class="block text-sm font-medium text-slate-300 mb-1">Tags (comma-separated)</label>
-                    <input type="text" id="edit-resource-tags" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white">
+                    <input type="text" id="edit-resource-tags" class="futuristic-input w-full text-white">
                 </div>
                 <div class="flex gap-4">
-                    <button type="button" id="cancel-edit-resource" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-md futuristic-btn">Cancel</button>
-                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md futuristic-btn">Save Changes</button>
+                    <button type="button" id="cancel-edit-resource" class="futuristic-btn btn-secondary w-full text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="futuristic-btn btn-success w-full text-white font-bold py-2 px-4 rounded-md">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -123,11 +119,11 @@
                 <input type="hidden" id="edit-project-id">
                 <div>
                     <label for="edit-project-name" class="block text-sm font-medium text-slate-300 mb-1">Project Name</label>
-                    <input type="text" id="edit-project-name" class="w-full bg-slate-700/80 border border-slate-600/80 rounded-md px-3 py-2 text-white" required>
+                    <input type="text" id="edit-project-name" class="futuristic-input w-full text-white" required>
                 </div>
                 <div class="flex gap-4">
-                    <button type="button" id="cancel-edit-project" class="w-full bg-slate-600 hover:bg-slate-700 text-white font-bold py-2 px-4 rounded-md futuristic-btn">Cancel</button>
-                    <button type="submit" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-md futuristic-btn">Save Name</button>
+                    <button type="button" id="cancel-edit-project" class="futuristic-btn btn-secondary w-full text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="futuristic-btn btn-primary w-full text-white font-bold py-2 px-4 rounded-md">Save Name</button>
                 </div>
             </form>
         </div>
