@@ -51,7 +51,7 @@
                 <div id="search-container" class="max-w-2xl mx-auto relative">
                     <input type="text" id="search-input" class="futuristic-input w-full text-slate-200 pl-10" placeholder="Search all resources...">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-slate-500" xmlns="http://www.w.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        <svg class="h-5 w-5 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                     </div>
                 </div>
             </header>
@@ -138,9 +138,9 @@
     
     <!-- Modals -->
     <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
-        <div class="ui-panel w-full max-w-lg modal-content">
-            <h2 class="text-2xl font-semibold text-white mb-4">Edit Resource</h2>
-            <form id="edit-resource-form" class="space-y-4">
+        <div class="modal-content w-full max-w-lg">
+            <h2 class="modal-header">Edit Resource</h2>
+            <form id="edit-resource-form" class="space-y-4 p-6">
                 <input type="hidden" id="edit-resource-id">
                 <div>
                     <label for="edit-resource-url" class="block text-sm font-medium text-slate-400 mb-1">URL</label>
@@ -154,7 +154,7 @@
                     <label for="edit-resource-tags" class="block text-sm font-medium text-slate-400 mb-1">Tags (comma-separated)</label>
                     <input type="text" id="edit-resource-tags" class="futuristic-input w-full text-slate-200">
                 </div>
-                <div class="flex gap-4">
+                <div class="flex gap-4 pt-4">
                     <button type="button" id="cancel-edit-resource" class="futuristic-btn btn-secondary w-full text-slate-200 font-bold py-2 px-4 rounded-md">Cancel</button>
                     <button type="submit" class="futuristic-btn btn-success w-full text-slate-200 font-bold py-2 px-4 rounded-md">Save Changes</button>
                 </div>
@@ -163,15 +163,15 @@
     </div>
 
     <div id="edit-project-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
-        <div class="ui-panel w-full max-w-md modal-content">
-            <h2 class="text-2xl font-semibold text-white mb-4">Rename Project</h2>
-            <form id="edit-project-form" class="space-y-4">
+        <div class="modal-content w-full max-w-md">
+            <h2 class="modal-header">Rename Project</h2>
+            <form id="edit-project-form" class="space-y-4 p-6">
                 <input type="hidden" id="edit-project-id">
                 <div>
                     <label for="edit-project-name" class="block text-sm font-medium text-slate-400 mb-1">Project Name</label>
                     <input type="text" id="edit-project-name" class="futuristic-input w-full text-slate-200" required>
                 </div>
-                <div class="flex gap-4">
+                <div class="flex gap-4 pt-4">
                     <button type="button" id="cancel-edit-project" class="futuristic-btn btn-secondary w-full text-slate-200 font-bold py-2 px-4 rounded-md">Cancel</button>
                     <button type="submit" class="futuristic-btn btn-primary w-full text-slate-200 font-bold py-2 px-4 rounded-md">Save Name</button>
                 </div>
