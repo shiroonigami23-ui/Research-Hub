@@ -1,4 +1,4 @@
-const CACHE_NAME = 'research-hub-cache-v2'; // Bumped version to trigger update
+const CACHE_NAME = 'research-hub-cache-v3'; // Bumped version for the new video
 
 // Updated list of files to cache for offline use
 const URLS_TO_CACHE = [
@@ -13,8 +13,11 @@ const URLS_TO_CACHE = [
   '/js/events.js',
   '/js/state.js',
   // PWA icons
-  '/image.png',
+  '/icon-192.png',
   '/icon-512.png',
+  '/image.png',
+  // *** NEW: Caching the background video ***
+  '/menu-background.mp4',
   // External resources
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'
@@ -26,7 +29,9 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Service Worker: Caching app shell');
-        return cache.addAll(URLS_TO_CACHE);
+        return cache.addAll(URLS_TO_CACHE).catch(err => {
+          console.error('Failed to cache:', err);
+        });
       })
   );
 });
@@ -45,13 +50,28 @@ self.addEventListener('activate', (event) => {
             );
         })
     );
+    return self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        return response || fetch(event.request);
-      })
-  );
+    // For video, use a cache-first, then network strategy
+    if (event.request.url.endsWith('.mp4')) {
+        event.respondWith(
+            caches.match(event.request).then(cacheResponse => {
+                return cacheResponse || fetch(event.request).then(networkResponse => {
+                    // Optional: You could add the video to cache here if it wasn't pre-cached
+                    return networkResponse;
+                });
+            })
+        );
+        return;
+    }
+
+    // For all other requests, use a standard cache-first strategy
+    event.respondWith(
+        caches.match(event.request)
+        .then((response) => {
+            return response || fetch(event.request);
+        })
+    );
 });
