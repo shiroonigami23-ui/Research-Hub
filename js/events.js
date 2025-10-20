@@ -1,4 +1,4 @@
-import { elements, openModal, closeModal, closeAllModals } from './dom.js';
+import { elements, openModal, closeModal, closeAllModals, showConfirmation } from './dom.js';
 import { getState, addProject, addResource, deleteProject, deleteResource, updateProject, updateResource, setActiveProject, setSearchQuery, exportData, importData, switchView } from './state.js';
 
 export function addEventListeners() {
@@ -38,9 +38,12 @@ export function addEventListeners() {
 
         if (deleteBtn) {
             const projectId = deleteBtn.dataset.id;
-            if (confirm('Are you sure you want to delete this project?')) {
-                deleteProject(projectId);
-            }
+            // UPDATED: Use custom confirmation modal
+            showConfirmation({
+                title: 'Delete Project?',
+                message: 'Are you sure you want to delete this project? This action cannot be undone.',
+                onConfirm: () => deleteProject(projectId)
+            });
             return;
         }
 
@@ -66,9 +69,12 @@ export function addEventListeners() {
 
         if (deleteBtn) {
             const resourceId = deleteBtn.dataset.id;
-            if (confirm('Are you sure you want to delete this resource?')) {
-                deleteResource(resourceId);
-            }
+            // UPDATED: Use custom confirmation modal
+            showConfirmation({
+                title: 'Delete Resource?',
+                message: 'Are you sure you want to delete this resource?',
+                onConfirm: () => deleteResource(resourceId)
+            });
             return;
         }
     });
@@ -99,6 +105,10 @@ export function addEventListeners() {
     elements.cancelEditProject.addEventListener('click', () => closeModal(elements.editProjectModal));
     elements.cancelEditResource.addEventListener('click', () => closeModal(elements.editResourceModal));
     
+    // NEW: Add listener for the new confirmation modal's cancel button
+    elements.cancelConfirmation.addEventListener('click', () => closeModal(elements.confirmationModal));
+
+
     // Close modals on overlay click
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.addEventListener('click', (e) => {
