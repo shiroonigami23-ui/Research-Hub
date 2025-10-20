@@ -44,6 +44,19 @@
     box-shadow: 0 0 15px rgba(148, 163, 184, 0.2);
 }
 
+/* NEW: Danger button style */
+.futuristic-btn.btn-danger {
+    border-color: #f43f5e; /* rose-500 */
+    background-color: rgba(244, 63, 94, 0.1);
+}
+
+.futuristic-btn.btn-danger:hover {
+    border-color: #fb7185; /* rose-400 */
+    background-color: rgba(244, 63, 94, 0.2);
+    box-shadow: 0 0 15px rgba(244, 63, 94, 0.3);
+}
+
+
 /* --- Project List --- */
 .project-item {
     display: flex;
