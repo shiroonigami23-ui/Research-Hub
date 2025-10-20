@@ -7,20 +7,13 @@ let state = {
     activeProjectId: null,
     searchQuery: '',
     currentView: 'main', 
-    // track current resource type for the add form
     activeResourceType: 'url',
+    // NEW: To handle tag filtering
+    activeTagFilter: null,
 };
 
 function saveState() {
-    // We only save metadata to localStorage, not the file content
-    const stateToSave = {
-        ...state,
-        resources: state.resources.map(r => {
-            // Don't save the temporary file object in localStorage
-            const { fileObject, ...rest } = r;
-            return rest;
-        })
-    };
+    const stateToSave = { ...state };
     localStorage.setItem('researchHubState', JSON.stringify(stateToSave));
 }
 
@@ -28,10 +21,10 @@ export function loadInitialState() {
     const savedState = localStorage.getItem('researchHubState');
     if (savedState) {
         state = JSON.parse(savedState);
-        // Reset properties that shouldn't be persisted
         state.activeResourceType = 'url';
+        // Ensure activeTagFilter is reset on load
+        state.activeTagFilter = null; 
     } else {
-        // First time load: create a default project
         const generalProject = { id: Date.now().toString(), name: 'General' };
         state.projects.push(generalProject);
         state.activeProjectId = generalProject.id;
@@ -42,11 +35,15 @@ export function loadInitialState() {
 }
 
 function getFilteredResources() {
-    const { resources, activeProjectId, searchQuery } = state;
+    const { resources, activeProjectId, searchQuery, activeTagFilter } = state;
     let filtered = resources;
 
     if (activeProjectId) {
         filtered = filtered.filter(r => r.projectId === activeProjectId);
+    }
+
+    if (activeTagFilter) {
+        filtered = filtered.filter(r => r.tags.includes(activeTagFilter));
     }
 
     if (searchQuery) {
@@ -62,13 +59,11 @@ function getFilteredResources() {
 }
 
 function renderAll() {
-    const { projects, activeProjectId, resources, searchQuery } = state;
+    const { projects, activeProjectId, activeTagFilter } = state;
     renderProjects(projects, activeProjectId);
     
     const filteredResources = getFilteredResources();
-    const totalResourcesInProject = resources.filter(r => r.projectId === activeProjectId).length;
-    
-    renderResources(filteredResources, totalResourcesInProject, searchQuery);
+    renderResources(filteredResources, activeTagFilter);
 }
 
 export function switchView(viewName) {
@@ -80,7 +75,7 @@ export function switchView(viewName) {
         elements.profilePage.classList.remove('is-hidden');
         elements.mainBackground.classList.add('is-hidden');
         elements.profileBackground.classList.remove('is-hidden');
-    } else { // 'main'
+    } else {
         elements.mainContent.classList.remove('is-hidden');
         elements.searchContainer.classList.remove('is-hidden');
         elements.profilePage.classList.add('is-hidden');
@@ -88,9 +83,6 @@ export function switchView(viewName) {
         elements.profileBackground.classList.add('is-hidden');
     }
 }
-
-
-// --- DATA MANIPULATION ---
 
 export function addProject(name) {
     if (!name.trim()) {
@@ -103,36 +95,20 @@ export function addProject(name) {
 }
 
 export async function addResource(data) {
-    const { notes, tags, projectId } = data;
-    const tagArray = tags.split(',').map(tag => tag.trim()).filter(Boolean);
+    const { notes, tags, projectId } = data; // tags is now an array
     const newId = Date.now().toString();
-
     let newResource;
 
     if (state.activeResourceType === 'file' && data.file) {
         try {
             await saveFile(newId, data.file);
-            newResource = {
-                id: newId,
-                type: 'file',
-                file: { name: data.file.name, size: data.file.size, type: data.file.type },
-                notes,
-                tags: tagArray,
-                projectId
-            };
+            newResource = { id: newId, type: 'file', file: { name: data.file.name, size: data.file.size, type: data.file.type }, notes, tags, projectId };
         } catch (error) {
             showNotification('Failed to save file.');
             return;
         }
     } else if (state.activeResourceType === 'url' && data.url) {
-        newResource = {
-            id: newId,
-            type: 'url',
-            url: data.url,
-            notes,
-            tags: tagArray,
-            projectId
-        };
+        newResource = { id: newId, type: 'url', url: data.url, notes, tags, projectId };
     } else {
         showNotification('Please provide a URL or a file.');
         return;
@@ -154,13 +130,10 @@ export function deleteProject(projectId) {
         showNotification("Cannot delete a project that contains resources.");
         return;
     }
-
     state.projects = state.projects.filter(p => p.id !== projectId);
-    
     if (state.activeProjectId === projectId) {
         state.activeProjectId = state.projects[0].id;
     }
-    
     saveState();
     renderAll();
 }
@@ -172,7 +145,6 @@ export async function deleteResource(resourceId) {
             await deleteFile(resourceId);
         } catch (error) {
             showNotification('Could not delete file from storage.');
-            // We still proceed to remove the metadata
         }
     }
     state.resources = state.resources.filter(r => r.id !== resourceId);
@@ -192,12 +164,11 @@ export function updateProject(projectId, newName) {
 export function updateResource(resourceId, newUrl, newNotes, newTags) {
     const resource = state.resources.find(r => r.id === resourceId);
     if (resource) {
-        // Only update URL if it's a URL type
         if (resource.type === 'url') {
             resource.url = newUrl;
         }
         resource.notes = newNotes;
-        resource.tags = newTags.split(',').map(tag => tag.trim()).filter(Boolean);
+        resource.tags = newTags; // It's now an array
         saveState();
         renderAll();
     }
@@ -205,21 +176,38 @@ export function updateResource(resourceId, newUrl, newNotes, newTags) {
 
 export function setActiveProject(projectId) {
     state.activeProjectId = projectId;
+    // Clear filters when switching projects for better UX
+    state.searchQuery = '';
+    elements.searchInput.value = '';
+    state.activeTagFilter = null;
     renderAll();
 }
 
 export function setSearchQuery(query) {
     state.searchQuery = query;
+    // When searching, clear tag filter and vice-versa
+    state.activeTagFilter = null;
+    renderAll();
+}
+
+export function setTagFilter(tagName) {
+    // If the same tag is clicked, clear the filter. Otherwise, set it.
+    if (state.activeTagFilter === tagName) {
+        state.activeTagFilter = null;
+    } else {
+        state.activeTagFilter = tagName;
+        // Clear search query when a tag is selected
+        state.searchQuery = '';
+        elements.searchInput.value = '';
+    }
     renderAll();
 }
 
 export function setActiveResourceType(type) {
     state.activeResourceType = type;
-    // Reset the file input when switching for cleaner UX
     elements.resourceFile.value = null; 
     elements.fileNameDisplay.textContent = '';
 }
-
 
 export async function downloadResourceFile(resourceId) {
     try {
@@ -232,7 +220,6 @@ export async function downloadResourceFile(resourceId) {
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            // Clean up the object URL after a short delay
             setTimeout(() => URL.revokeObjectURL(link.href), 100);
         } else {
             showNotification('Could not find file to download.');
@@ -246,9 +233,7 @@ export async function downloadResourceFile(resourceId) {
 export function exportData() {
     const dataStr = JSON.stringify(state, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
     const exportFileDefaultName = 'research_hub_backup.json';
-    
     const linkElement = document.createElement('a');
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', exportFileDefaultName);
@@ -266,11 +251,9 @@ export function importData(file) {
         try {
             const newState = JSON.parse(event.target.result);
             if (newState.projects && newState.resources) {
-                const fileResources = newState.resources.filter(r => r.type === 'file');
-                if (fileResources.length > 0) {
+                if (newState.resources.some(r => r.type === 'file')) {
                     showNotification("Warning: File content is not included in JSON backups.", true);
                 }
-
                 state = newState;
                 state.activeProjectId = state.projects[0]?.id || null;
                 state.searchQuery = '';
