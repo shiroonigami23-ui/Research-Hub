@@ -71,8 +71,8 @@
                     <div class="p-4">
                         <h2 class="text-2xl font-semibold text-white mb-4">Add New Resource</h2>
                         
-                        <!-- NEW: Resource Type Toggle -->
-                        <div class="flex border border-slate-700 rounded-md p-1 mb-4 bg-slate-900/50">
+                        <!-- MODIFIED: Resource Type Toggle container (removed background) -->
+                        <div class="flex border border-slate-700 rounded-md p-1 mb-4">
                             <button id="toggle-url-btn" class="resource-toggle-btn active w-1/2">URL</button>
                             <button id="toggle-file-btn" class="resource-toggle-btn w-1/2">File</button>
                         </div>
@@ -159,13 +159,11 @@
             <form id="edit-resource-form" class="space-y-4 p-6">
                 <input type="hidden" id="edit-resource-id">
                 
-                <!-- Container for URL editing -->
                 <div id="edit-url-container">
                     <label for="edit-resource-url" class="block text-sm font-medium text-slate-400 mb-1">URL</label>
                     <input type="url" id="edit-resource-url" class="futuristic-input w-full text-slate-200" required>
                 </div>
                 
-                <!-- Container for displaying file info (not editable) -->
                  <div id="edit-file-info" class="hidden">
                     <label class="block text-sm font-medium text-slate-400 mb-1">File</label>
                     <p id="edit-file-name" class="text-slate-300 p-2 border border-slate-700 rounded-md bg-slate-800/50 truncate"></p>
