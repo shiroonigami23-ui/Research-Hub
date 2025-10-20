@@ -118,7 +118,6 @@
     border-radius: 9999px;
 }
 
-
 /* --- Icon Buttons --- */
 .icon-btn {
     background-color: rgba(30, 41, 59, 0.7);
@@ -174,21 +173,27 @@
     border-bottom: 1px solid #334155; /* slate-700 */
 }
 
-/* --- NEW STYLES for File Upload & Toggles --- */
+/* --- MODIFIED STYLES for File Upload & Toggles --- */
 
 .resource-toggle-btn {
     padding: 0.5rem;
     border-radius: 0.25rem;
+    background-color: transparent;
     border: 1px solid transparent;
     color: #94a3b8; /* slate-400 */
     font-weight: 500;
-    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s;
+    transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.resource-toggle-btn:hover {
+    color: #e2e8f0; /* slate-200 */
+    background-color: rgba(100, 116, 139, 0.2);
 }
 
 .resource-toggle-btn.active {
-    background-color: #0ea5e9; /* sky-500 */
-    color: #ffffff;
-    box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+    background-color: rgba(14, 165, 233, 0.15);
+    color: #f8fafc; /* slate-50 */
+    border-color: rgba(14, 165, 233, 0.5);
+    box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
 }
 
 .file-drop-area {
@@ -202,12 +207,12 @@
     border-radius: 0.375rem;
     cursor: pointer;
     transition: border-color 0.2s, background-color 0.2s;
-    background-color: rgba(30, 41, 59, 0.2);
+    background-color: transparent; /* MODIFIED: Removed background */
 }
 
 .file-drop-area:hover, .file-drop-area.dragover {
     border-color: #0ea5e9; /* sky-500 */
-    background-color: rgba(14, 165, 233, 0.1);
+    background-color: rgba(14, 165, 233, 0.1); /* Keep hover feedback */
 }
 
 /* Card content for file resources */
