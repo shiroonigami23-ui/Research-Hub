@@ -70,14 +70,37 @@
 
                     <div class="p-4">
                         <h2 class="text-2xl font-semibold text-white mb-4">Add New Resource</h2>
+                        
+                        <!-- NEW: Resource Type Toggle -->
+                        <div class="flex border border-slate-700 rounded-md p-1 mb-4 bg-slate-900/50">
+                            <button id="toggle-url-btn" class="resource-toggle-btn active w-1/2">URL</button>
+                            <button id="toggle-file-btn" class="resource-toggle-btn w-1/2">File</button>
+                        </div>
+                        
                         <form id="add-resource-form" class="space-y-4">
-                             <div>
+                             <!-- URL Input Section -->
+                             <div id="url-input-container">
                                 <label for="resource-url" class="block text-sm font-medium text-slate-400 mb-1">URL</label>
                                 <input type="url" id="resource-url" class="futuristic-input w-full text-slate-200" placeholder="https://example.com" required>
                             </div>
+                            
+                            <!-- File Input Section (Initially Hidden) -->
+                            <div id="file-input-container" class="hidden">
+                                <label for="resource-file-trigger" class="block text-sm font-medium text-slate-400 mb-1">Upload File</label>
+                                <div id="file-drop-area" class="file-drop-area">
+                                    <svg class="mx-auto h-12 w-12 text-slate-500" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                    <p class="mt-1 block text-sm text-slate-400">
+                                        <span class="font-semibold text-sky-400">Click to upload</span> or drag and drop
+                                    </p>
+                                    <p class="text-xs text-slate-500">Any file type</p>
+                                    <input type="file" id="resource-file" class="hidden">
+                                </div>
+                                <p id="file-name-display" class="text-center text-sm text-slate-300 mt-2 truncate"></p>
+                            </div>
+                            
                             <div>
                                 <label for="resource-notes" class="block text-sm font-medium text-slate-400 mb-1">Notes</label>
-                                <textarea id="resource-notes" rows="3" class="futuristic-input w-full text-slate-200" placeholder="Briefly describe why this link is useful..."></textarea>
+                                <textarea id="resource-notes" rows="3" class="futuristic-input w-full text-slate-200" placeholder="Briefly describe why this is useful..."></textarea>
                             </div>
                             <div>
                                 <label for="resource-tags" class="block text-sm font-medium text-slate-400 mb-1">Tags (comma-separated)</label>
@@ -135,10 +158,19 @@
             <h2 class="modal-header">Edit Resource</h2>
             <form id="edit-resource-form" class="space-y-4 p-6">
                 <input type="hidden" id="edit-resource-id">
-                <div>
+                
+                <!-- Container for URL editing -->
+                <div id="edit-url-container">
                     <label for="edit-resource-url" class="block text-sm font-medium text-slate-400 mb-1">URL</label>
                     <input type="url" id="edit-resource-url" class="futuristic-input w-full text-slate-200" required>
                 </div>
+                
+                <!-- Container for displaying file info (not editable) -->
+                 <div id="edit-file-info" class="hidden">
+                    <label class="block text-sm font-medium text-slate-400 mb-1">File</label>
+                    <p id="edit-file-name" class="text-slate-300 p-2 border border-slate-700 rounded-md bg-slate-800/50 truncate"></p>
+                </div>
+
                 <div>
                     <label for="edit-resource-notes" class="block text-sm font-medium text-slate-400 mb-1">Notes</label>
                     <textarea id="edit-resource-notes" rows="3" class="futuristic-input w-full text-slate-200"></textarea>
@@ -172,20 +204,6 @@
         </div>
     </div>
     
-    <!-- NEW: Confirmation Modal -->
-    <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
-        <div class="modal-content w-full max-w-sm">
-            <h2 class="modal-header" id="confirmation-title">Are you sure?</h2>
-            <div class="p-6">
-                <p id="confirmation-message" class="text-slate-400 mb-6">This action cannot be undone.</p>
-                <div class="flex gap-4">
-                    <button id="cancel-confirmation" class="futuristic-btn btn-secondary w-full text-slate-200 font-bold py-2 px-4 rounded-md">Cancel</button>
-                    <button id="confirm-action" class="futuristic-btn btn-danger w-full text-white font-bold py-2 px-4 rounded-md">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div id="notification" class="fixed bottom-5 right-5 bg-red-600/90 backdrop-blur-sm text-white py-2 px-5 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 border border-red-500/50"></div>
 
     <script type="module" src="js/main.js"></script>
@@ -198,4 +216,5 @@
     </script>
 </body>
 </html>
+
 
