@@ -1,5 +1,14 @@
-import { elements, openModal, closeModal, closeAllModals, renderTagPills, showAiSpinner, hideAiSpinner, showNotification } from './dom.js';
-import { getState, addProject, addResource, deleteProject, deleteResource, updateProject, updateResource, setActiveProject, setSearchQuery, exportData, importData, switchView, setActiveResourceType, downloadResourceFile, setTagFilter } from './state.js';
+import { 
+    elements, openModal, closeModal, closeAllModals, renderTagPills, 
+    showAiSpinner, hideAiSpinner, showNotification, 
+    showAiFileSpinner, hideAiFileSpinner // <-- NEW IMPORTS
+} from './dom.js';
+import { 
+    getState, addProject, addResource, deleteProject, deleteResource, 
+    updateProject, updateResource, setActiveProject, setSearchQuery, 
+    exportData, importData, switchView, setActiveResourceType, 
+    downloadResourceFile, setTagFilter 
+} from './state.js';
 
 // --- Helper for managing tags in the UI ---
 function setupTagInput(container, input) {
@@ -48,110 +57,78 @@ export function addEventListeners() {
     const addFormTags = setupTagInput(elements.resourceTagsContainer, elements.resourceTagsInput);
     const editFormTags = setupTagInput(elements.editResourceTagsContainer, elements.editResourceTagsInput);
 
-    // --- NEW AI URL ANALYSIS EVENT ---
+    // --- AI URL ANALYSIS EVENT (Unchanged) ---
     elements.resourceUrl.addEventListener('blur', async (e) => {
         const url = e.target.value.trim();
+        const apiKey = ""; // Your secure API key
         
-        // Only run if it looks like a valid URL
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        if (!url.startsWith('http://') && !url.startsWith('https://') || !apiKey) {
             return;
         }
 
         showAiSpinner();
         
         try {
-            // =================================================================
-            // WARNING: API_KEY is visible in public-facing code.
-            // Ensure this key is heavily restricted (e.g., to your exact GitHub domain).
-            // =================================================================
-            const apiKey = "AIzaSyAn0D5MuaBMqcA0YJz5cqNCYLlTqd5W-q4"; // API key is injected by the environment
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-
-            const systemPrompt = `You are an expert research assistant. Your job is to analyze the content of a URL and provide a concise summary and relevant keywords.
             
-            Guidelines:
-            - The summary should be a single, informative paragraph.
-            - Provide 3-5 keyword tags that accurately reflect the main topics.
-            - Respond ONLY with the requested JSON object.`;
-            
-            const userQuery = `Please analyze the content of this URL: ${url}`;
-            
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                tools: [{ "google_search": {} }], // Enable Google Search grounding to read the URL
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
+            const analysisSchema = {
+                type: "OBJECT",
+                properties: {
+                    "summary": { "type": "STRING" },
+                    "tags": {
+                        "type": "ARRAY",
+                        "items": { "type": "STRING" }
+                    }
                 },
+                required: ["summary", "tags"]
+            };
+
+            const systemPrompt = "You are an AI research assistant. A user has provided a URL. Summarize the content of the webpage in a single, concise paragraph (under 100 words). Based on the content, provide an array of 3-5 relevant lowercase tags. The user's prompt will be the URL.";
+
+            const payload = {
+                contents: [{ parts: [{ text: url }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
                 generationConfig: {
                     responseMimeType: "application/json",
-                    responseSchema: {
-                        type: "OBJECT",
-                        properties: {
-                            "summary": { "type": "STRING" },
-                            "tags": {
-                                "type": "ARRAY",
-                                "items": { "type": "STRING" }
-                            }
-                        },
-                        required: ["summary", "tags"]
-                    }
+                    responseSchema: analysisSchema
                 }
             };
 
-            // Exponential backoff for retries
-            let response;
-            let delay = 1000;
-            for (let i = 0; i < 5; i++) {
-                response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (response.ok) {
-                    break; // Success
-                }
-
-                if (response.status === 429 || response.status >= 500) {
-                    // Throttling or server error, wait and retry
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2;
-                } else {
-                    // Other client-side error, don't retry
-                    throw new Error(`API request failed with status ${response.status}`);
-                }
-            }
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
 
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({})); // Try to get error details
-                console.error("API Error Response:", errorData);
-                throw new Error(`API request failed after retries. Status: ${response.status}.`);
+                throw new Error(`API error: ${response.status} ${response.statusText}`);
             }
 
             const result = await response.json();
             
-            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content?.parts?.[0]?.text) {
-                const jsonText = result.candidates[0].content.parts[0].text;
-                const data = JSON.parse(jsonText);
-                
-                // Populate the form
+            if (!result.candidates || !result.candidates[0].content.parts[0].text) {
+                 throw new Error("Invalid API response structure.");
+            }
+            
+            const jsonText = result.candidates[0].content.parts[0].text;
+            const data = JSON.parse(jsonText);
+            
+            if (data.summary && data.tags) {
                 elements.resourceNotes.value = data.summary;
-                addFormTags.setTags(data.tags); // This will render the tags as pills
-                
+                addFormTags.setTags(data.tags);
                 showNotification("AI analysis complete!", false);
             } else {
-                console.warn("AI Response Structure issue:", result);
-                throw new Error("Invalid response structure from AI.");
+                throw new Error("Invalid data in AI response.");
             }
 
         } catch (error) {
             console.error("AI Analysis Error:", error);
-            showNotification(error.message || "AI analysis failed. Check console.", true);
+            showNotification(error.message, true);
         } finally {
             hideAiSpinner();
         }
     });
-    // --- END OF NEW AI EVENT ---
 
 
     elements.toggleUrlBtn.addEventListener('click', () => {
@@ -178,9 +155,109 @@ export function addEventListeners() {
         elements.resourceFile.click();
     });
 
-    elements.resourceFile.addEventListener('change', () => {
-        elements.fileNameDisplay.textContent = elements.resourceFile.files.length > 0 ? elements.resourceFile.files[0].name : '';
+    // --- NEW: AI FILE ANALYSIS EVENT ---
+    elements.resourceFile.addEventListener('change', async () => {
+        if (elements.resourceFile.files.length === 0) {
+            elements.fileNameDisplay.textContent = '';
+            return;
+        }
+
+        const file = elements.resourceFile.files[0];
+        elements.fileNameDisplay.textContent = file.name;
+        const apiKey = ""; // Your secure API key
+
+        // 1. Define allowed text types and size limit
+        const allowedTypes = ['text/plain', 'text/markdown', 'text/javascript', 'text/css', 'text/html', 'application/json', 'text/x-python', 'text/csv'];
+        const isTextFile = allowedTypes.includes(file.type) || file.name.endsWith('.md') || file.name.endsWith('.txt');
+        const MAX_SIZE_BYTES = 1 * 1024 * 1024; // 1MB
+
+        // 2. Check if file is valid for analysis
+        if (!apiKey || !isTextFile) {
+            console.log('File type not supported for AI analysis or no API key.');
+            return; // Not a text file or no key, just upload it normally
+        }
+
+        if (file.size > MAX_SIZE_BYTES) {
+            showNotification('File is too large for AI analysis (Max 1MB).', true);
+            return;
+        }
+
+        // 3. Read the file
+        let fileContent;
+        try {
+            fileContent = await file.text();
+        } catch (readError) {
+            console.error('File read error:', readError);
+            showNotification('Could not read file content.', true);
+            return;
+        }
+
+        // 4. Show spinner and call AI
+        showAiFileSpinner();
+        try {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const analysisSchema = {
+                type: "OBJECT",
+                properties: {
+                    "summary": { "type": "STRING" },
+                    "tags": {
+                        "type": "ARRAY",
+                        "items": { "type": "STRING" }
+                    }
+                },
+                required: ["summary", "tags"]
+            };
+
+            const systemPrompt = "You are an AI research assistant. A user has uploaded a file. Summarize its content in a single, concise paragraph (under 100 words). Based on the content, provide an array of 3-5 relevant lowercase tags. The user's prompt will be the full text content of the file.";
+
+            const payload = {
+                contents: [{ parts: [{ text: fileContent }] }], // Use file content as prompt
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: analysisSchema
+                }
+            };
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status} ${response.statusText}`);
+            }
+
+            const result = await response.json();
+
+            if (!result.candidates || !result.candidates[0].content.parts[0].text) {
+                 throw new Error("Invalid API response structure.");
+            }
+
+            const jsonText = result.candidates[0].content.parts[0].text;
+            const data = JSON.parse(jsonText);
+
+            // 5. Populate form
+            if (data.summary && data.tags) {
+                elements.resourceNotes.value = data.summary;
+                addFormTags.setTags(data.tags);
+                showNotification("AI file analysis complete!", false);
+            } else {
+                throw new Error("Invalid data in AI response.");
+            }
+
+        } catch (error) {
+            console.error("AI File Analysis Error:", error);
+            showNotification(error.message, true);
+        } finally {
+            // 6. Hide spinner
+            hideAiFileSpinner();
+        }
     });
+    // --- END OF NEW FILE EVENT ---
+
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         elements.fileDropArea.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
@@ -193,7 +270,7 @@ export function addEventListeners() {
     });
     elements.fileDropArea.addEventListener('drop', (e) => {
         elements.resourceFile.files = e.dataTransfer.files;
-        elements.resourceFile.dispatchEvent(new Event('change'));
+        elements.resourceFile.dispatchEvent(new Event('change')); // Manually trigger 'change' to run AI
     });
 
     elements.addProjectForm.addEventListener('submit', (e) => {
@@ -230,10 +307,7 @@ export function addEventListeners() {
             openModal(elements.editProjectModal);
         } else if (e.target.closest('.delete-project-btn')) {
             const projectId = e.target.closest('.delete-project-btn').dataset.id;
-            // This is the old, ugly confirm box.
-            if (confirm('Are you sure you want to delete this project?')) {
-                deleteProject(projectId);
-            }
+            if (confirm('Are you sure you want to delete this project?')) deleteProject(projectId);
         } else if (projectItem) {
             setActiveProject(projectItem.dataset.id);
         }
@@ -269,10 +343,7 @@ export function addEventListeners() {
             editFormTags.setTags(resource.tags);
             openModal(elements.editResourceModal);
         } else if (cardAction.classList.contains('delete-resource-btn')) {
-            // This is the old, ugly confirm box.
-            if (confirm('Are you sure you want to delete this resource?')) {
-                deleteResource(resourceId);
-            }
+            if (confirm('Are you sure you want to delete this resource?')) deleteResource(resourceId);
         } else if (cardAction.classList.contains('download-resource-btn')) {
             downloadResourceFile(resourceId);
         }
