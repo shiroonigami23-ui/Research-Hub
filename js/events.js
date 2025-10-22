@@ -60,7 +60,7 @@ export function addEventListeners() {
     // --- AI URL ANALYSIS EVENT (Unchanged) ---
     elements.resourceUrl.addEventListener('blur', async (e) => {
         const url = e.target.value.trim();
-        const apiKey = ""; // Your secure API key
+        const apiKey = "AIzaSyAn0D5MuaBMqcA0YJz5cqNCYLlTqd5W-q4"; // Your secure API key
         
         if (!url.startsWith('http://') && !url.startsWith('https://') || !apiKey) {
             return;
