@@ -278,3 +278,10 @@
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
+/* --- NEW Style for AI File Spinner Container --- */
+/* This adds the futuristic blurred background when analyzing a file */
+#ai-spinner-file {
+    background-color: rgba(15, 23, 42, 0.6); /* bg-slate-900/60 */
+    backdrop-filter: blur(4px);
+    border-radius: 0.375rem; /* rounded-md */
+}
