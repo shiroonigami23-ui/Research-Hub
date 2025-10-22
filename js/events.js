@@ -60,6 +60,10 @@ export function addEventListeners() {
         showAiSpinner();
         
         try {
+            // =================================================================
+            // WARNING: API_KEY is visible in public-facing code.
+            // Ensure this key is heavily restricted (e.g., to your exact GitHub domain).
+            // =================================================================
             const apiKey = "AIzaSyAn0D5MuaBMqcA0YJz5cqNCYLlTqd5W-q4"; // API key is injected by the environment
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
@@ -119,7 +123,9 @@ export function addEventListeners() {
             }
 
             if (!response.ok) {
-                throw new Error(`API request failed after retries with status ${response.status}`);
+                const errorData = await response.json().catch(() => ({})); // Try to get error details
+                console.error("API Error Response:", errorData);
+                throw new Error(`API request failed after retries. Status: ${response.status}.`);
             }
 
             const result = await response.json();
@@ -134,12 +140,13 @@ export function addEventListeners() {
                 
                 showNotification("AI analysis complete!", false);
             } else {
+                console.warn("AI Response Structure issue:", result);
                 throw new Error("Invalid response structure from AI.");
             }
 
         } catch (error) {
             console.error("AI Analysis Error:", error);
-            showNotification("AI analysis failed. Please check URL.", true);
+            showNotification(error.message || "AI analysis failed. Check console.", true);
         } finally {
             hideAiSpinner();
         }
@@ -223,7 +230,10 @@ export function addEventListeners() {
             openModal(elements.editProjectModal);
         } else if (e.target.closest('.delete-project-btn')) {
             const projectId = e.target.closest('.delete-project-btn').dataset.id;
-            if (confirm('Are you sure you want to delete this project?')) deleteProject(projectId);
+            // This is the old, ugly confirm box.
+            if (confirm('Are you sure you want to delete this project?')) {
+                deleteProject(projectId);
+            }
         } else if (projectItem) {
             setActiveProject(projectItem.dataset.id);
         }
@@ -259,7 +269,10 @@ export function addEventListeners() {
             editFormTags.setTags(resource.tags);
             openModal(elements.editResourceModal);
         } else if (cardAction.classList.contains('delete-resource-btn')) {
-            if (confirm('Are you sure you want to delete this resource?')) deleteResource(resourceId);
+            // This is the old, ugly confirm box.
+            if (confirm('Are you sure you want to delete this resource?')) {
+                deleteResource(resourceId);
+            }
         } else if (cardAction.classList.contains('download-resource-btn')) {
             downloadResourceFile(resourceId);
         }
