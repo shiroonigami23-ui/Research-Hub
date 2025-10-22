@@ -48,6 +48,7 @@
                        <img src="default.png" alt="Profile" class="w-full h-full object-cover">
                     </button>
                 </div>
+                <!-- This is the container we needed to add to dom.js -->
                 <div id="search-container" class="max-w-2xl mx-auto relative">
                     <input type="text" id="search-input" class="futuristic-input w-full text-slate-200 pl-10" placeholder="Search resources or tag">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -129,6 +130,15 @@
                         <h3 class="mt-2 text-lg font-medium text-white">No Results Found</h3>
                         <p class="mt-1 text-slate-400">Try adjusting your search or clearing the tag filter.</p>
                     </div>
+                    
+                    <!-- --- THIS IS THE NEWLY ADDED BLOCK --- -->
+                    <div id="empty-state-empty-project" class="hidden text-center py-20">
+                        <svg class="mx-auto h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
+                        <h3 class="mt-2 text-lg font-medium text-white">Project is Empty</h3>
+                        <p class="mt-1 text-slate-400">Add a new resource to get started.</p>
+                    </div>
+                    <!-- --- END OF NEW BLOCK --- -->
+                    
                 </section>
             </main>
 
@@ -219,5 +229,4 @@
     </script>
 </body>
 </html>
-
 
