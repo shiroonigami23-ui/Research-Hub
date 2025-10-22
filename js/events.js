@@ -60,7 +60,7 @@ export function addEventListeners() {
         showAiSpinner();
         
         try {
-            const apiKey = ""; // API key is injected by the environment
+            const apiKey = "AIzaSyAn0D5MuaBMqcA0YJz5cqNCYLlTqd5W-q4"; // API key is injected by the environment
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
             const systemPrompt = `You are an expert research assistant. Your job is to analyze the content of a URL and provide a concise summary and relevant keywords.
