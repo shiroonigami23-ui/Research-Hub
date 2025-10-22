@@ -58,20 +58,29 @@ function getFilteredResources() {
     return filtered;
 }
 
+// --- UPDATED FUNCTION ---
 function renderAll() {
-    const { projects, activeProjectId, activeTagFilter } = state;
+    // Get all the state properties we need
+    const { projects, activeProjectId, activeTagFilter, searchQuery, resources } = state;
+    
     renderProjects(projects, activeProjectId);
     
     const filteredResources = getFilteredResources();
-    renderResources(filteredResources, activeTagFilter);
+    
+    // NEW: Check how many resources are in this project *before* searching
+    const totalProjectResources = resources.filter(r => r.projectId === activeProjectId).length;
+    
+    // Pass the new information to renderResources
+    renderResources(filteredResources, activeTagFilter, searchQuery, totalProjectResources);
 }
+// --- END OF UPDATED FUNCTION ---
 
 export function switchView(viewName) {
     state.currentView = viewName;
     
     if (viewName === 'profile') {
         elements.mainContent.classList.add('is-hidden');
-        elements.searchContainer.classList.add('is-hidden');
+        elements.searchContainer.classList.add('is-hidden'); // This now works!
         elements.profilePage.classList.remove('is-hidden');
         elements.mainBackground.classList.add('is-hidden');
         elements.profileBackground.classList.remove('is-hidden');
@@ -270,7 +279,7 @@ export function importData(file) {
             console.error(e);
         }
     };
-    reader.readAsText(file);
+    reader.readText(file);
 }
 
 export const getState = () => state;
