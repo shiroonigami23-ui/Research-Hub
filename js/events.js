@@ -1,4 +1,4 @@
-import { elements, openModal, closeModal, closeAllModals, renderTagPills } from './dom.js';
+import { elements, openModal, closeModal, closeAllModals, renderTagPills, showAiSpinner, hideAiSpinner, showNotification } from './dom.js';
 import { getState, addProject, addResource, deleteProject, deleteResource, updateProject, updateResource, setActiveProject, setSearchQuery, exportData, importData, switchView, setActiveResourceType, downloadResourceFile, setTagFilter } from './state.js';
 
 // --- Helper for managing tags in the UI ---
@@ -7,7 +7,8 @@ function setupTagInput(container, input) {
     
     container.addEventListener('click', (e) => {
         if (e.target.classList.contains('tag-pill-remove')) {
-            tags = tags.filter(tag => tag !== e.target.dataset.tag);
+            const tagToRemove = e.target.dataset.tag;
+            tags = tags.filter(tag => tag !== tagToRemove);
             renderTagPills(container, tags);
         }
     });
@@ -33,7 +34,7 @@ function setupTagInput(container, input) {
     return {
         getTags: () => tags,
         setTags: (newTags) => {
-            tags = newTags;
+            tags = [...newTags]; // Use spread to create a new array
             renderTagPills(container, tags);
         },
         clear: () => {
@@ -46,6 +47,105 @@ function setupTagInput(container, input) {
 export function addEventListeners() {
     const addFormTags = setupTagInput(elements.resourceTagsContainer, elements.resourceTagsInput);
     const editFormTags = setupTagInput(elements.editResourceTagsContainer, elements.editResourceTagsInput);
+
+    // --- NEW AI URL ANALYSIS EVENT ---
+    elements.resourceUrl.addEventListener('blur', async (e) => {
+        const url = e.target.value.trim();
+        
+        // Only run if it looks like a valid URL
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            return;
+        }
+
+        showAiSpinner();
+        
+        try {
+            const apiKey = ""; // API key is injected by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `You are an expert research assistant. Your job is to analyze the content of a URL and provide a concise summary and relevant keywords.
+            
+            Guidelines:
+            - The summary should be a single, informative paragraph.
+            - Provide 3-5 keyword tags that accurately reflect the main topics.
+            - Respond ONLY with the requested JSON object.`;
+            
+            const userQuery = `Please analyze the content of this URL: ${url}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }], // Enable Google Search grounding to read the URL
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "summary": { "type": "STRING" },
+                            "tags": {
+                                "type": "ARRAY",
+                                "items": { "type": "STRING" }
+                            }
+                        },
+                        required: ["summary", "tags"]
+                    }
+                }
+            };
+
+            // Exponential backoff for retries
+            let response;
+            let delay = 1000;
+            for (let i = 0; i < 5; i++) {
+                response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    break; // Success
+                }
+
+                if (response.status === 429 || response.status >= 500) {
+                    // Throttling or server error, wait and retry
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    delay *= 2;
+                } else {
+                    // Other client-side error, don't retry
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+            }
+
+            if (!response.ok) {
+                throw new Error(`API request failed after retries with status ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content?.parts?.[0]?.text) {
+                const jsonText = result.candidates[0].content.parts[0].text;
+                const data = JSON.parse(jsonText);
+                
+                // Populate the form
+                elements.resourceNotes.value = data.summary;
+                addFormTags.setTags(data.tags); // This will render the tags as pills
+                
+                showNotification("AI analysis complete!", false);
+            } else {
+                throw new Error("Invalid response structure from AI.");
+            }
+
+        } catch (error) {
+            console.error("AI Analysis Error:", error);
+            showNotification("AI analysis failed. Please check URL.", true);
+        } finally {
+            hideAiSpinner();
+        }
+    });
+    // --- END OF NEW AI EVENT ---
+
 
     elements.toggleUrlBtn.addEventListener('click', () => {
         setActiveResourceType('url');
