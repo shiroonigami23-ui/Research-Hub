@@ -17,7 +17,6 @@
 </head>
 <body class="bg-slate-900 text-slate-300">
 
-    <!-- MAIN PAGE BACKGROUND -->
     <div id="main-background" class="video-background-container page-background">
         <video autoplay muted loop playsinline class="video-background">
             <source src="menu-background.mp4" type="video/mp4">
@@ -25,7 +24,6 @@
         <div class="video-overlay"></div>
     </div>
     
-    <!-- PROFILE PAGE BACKGROUND (Initially hidden) -->
     <div id="profile-background" class="video-background-container page-background is-hidden">
          <video autoplay muted loop playsinline class="video-background">
             <source src="profile-background.mp4" type="video/mp4">
@@ -39,8 +37,7 @@
             
             <header class="text-center mb-8">
                 <div class="flex justify-between items-center mb-6">
-                    <div class="w-12"></div> <!-- Spacer -->
-                    <div class="text-center">
+                    <div class="w-12"></div> <div class="text-center">
                         <h1 class="text-4xl md:text-5xl font-bold text-white [text-shadow:_0_2px_10px_rgb(0_0_0_/_50%)]">Research Hub</h1>
                         <p class="text-slate-400 mt-2 [text-shadow:_0_1px_5px_rgb(0_0_0_/_50%)]">Your personal dashboard for organizing project resources.</p>
                     </div>
@@ -48,7 +45,6 @@
                        <img src="default.png" alt="Profile" class="w-full h-full object-cover">
                     </button>
                 </div>
-                <!-- This is the container we needed to add to dom.js -->
                 <div id="search-container" class="max-w-2xl mx-auto relative">
                     <input type="text" id="search-input" class="futuristic-input w-full text-slate-200 pl-10" placeholder="Search resources or tag">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -57,7 +53,6 @@
                 </div>
             </header>
 
-            <!-- ======================= MAIN CONTENT ======================= -->
             <main id="main-content" class="page-view grid grid-cols-1 lg:grid-cols-3 gap-8">
                  <aside class="lg:col-span-1 space-y-8">
                     <div class="p-4">
@@ -78,10 +73,11 @@
                         </div>
                         
                         <form id="add-resource-form" class="space-y-4">
-                             <div id="url-input-container">
-                                <label for="resource-url" class="block text-sm font-medium text-slate-400 mb-1">URL</label>
-                                <input type="url" id="resource-url" class="futuristic-input w-full text-slate-200" placeholder="https://example.com" required>
-                            </div>
+                             <div id="url-input-container" class="relative"> <label for="resource-url" class="block text-sm font-medium text-slate-400 mb-1">URL</label>
+                                <input type="url" id="resource-url" class="futuristic-input w-full text-slate-200 pr-10" placeholder="https://example.com" required> <div id="ai-spinner" class="absolute right-0 top-7 hidden">
+                                    <div class="ai-spinner-inner"></div>
+                                </div>
+                                </div>
                             
                             <div id="file-input-container" class="hidden">
                                 <label for="resource-file-trigger" class="block text-sm font-medium text-slate-400 mb-1">Upload File</label>
@@ -95,10 +91,9 @@
                             
                             <div>
                                 <label for="resource-notes" class="block text-sm font-medium text-slate-400 mb-1">Notes</label>
-                                <textarea id="resource-notes" rows="3" class="futuristic-input w-full text-slate-200" placeholder="Briefly describe why this is useful..."></textarea>
+                                <textarea id="resource-notes" rows="3" class="futuristic-input w-full text-slate-200" placeholder="Briefly describe why this is useful... (or paste a URL to auto-summarize)"></textarea>
                             </div>
                             
-                            <!-- NEW: Interactive Tag Input -->
                             <div>
                                 <label for="resource-tags-input" class="block text-sm font-medium text-slate-400 mb-1">Tags (press Enter to add)</label>
                                 <div id="resource-tags-container" class="tag-input-container">
@@ -130,19 +125,15 @@
                         <h3 class="mt-2 text-lg font-medium text-white">No Results Found</h3>
                         <p class="mt-1 text-slate-400">Try adjusting your search or clearing the tag filter.</p>
                     </div>
-                    
-                    <!-- --- THIS IS THE NEWLY ADDED BLOCK --- -->
+
                     <div id="empty-state-empty-project" class="hidden text-center py-20">
                         <svg class="mx-auto h-12 w-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
                         <h3 class="mt-2 text-lg font-medium text-white">Project is Empty</h3>
                         <p class="mt-1 text-slate-400">Add a new resource to get started.</p>
                     </div>
-                    <!-- --- END OF NEW BLOCK --- -->
-                    
                 </section>
             </main>
 
-            <!-- PROFILE PAGE -->
             <section id="profile-page" class="page-view is-hidden max-w-4xl mx-auto text-center">
                 <div class="flex flex-col items-center">
                     <img src="default.png" alt="Profile Picture" class="w-32 h-32 rounded-full border-4 border-slate-700/50 object-cover mb-4">
@@ -167,7 +158,6 @@
         </div>
     </div>
     
-    <!-- MODALS -->
     <div id="edit-resource-modal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center p-4 modal-overlay">
         <div class="modal-content w-full max-w-lg">
             <h2 class="modal-header">Edit Resource</h2>
@@ -185,7 +175,6 @@
                     <label for="edit-resource-notes" class="block text-sm font-medium text-slate-400 mb-1">Notes</label>
                     <textarea id="edit-resource-notes" rows="3" class="futuristic-input w-full text-slate-200"></textarea>
                 </div>
-                <!-- NEW: Interactive Tag Input for Edit Modal -->
                 <div>
                     <label for="edit-resource-tags-input" class="block text-sm font-medium text-slate-400 mb-1">Tags (press Enter to add)</label>
                     <div id="edit-resource-tags-container" class="tag-input-container">
@@ -229,4 +218,3 @@
     </script>
 </body>
 </html>
-
