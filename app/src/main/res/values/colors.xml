@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bgStart">#08111F</color>
+    <color name="bgEnd">#13253B</color>
+    <color name="surface">#16293F</color>
+    <color name="stroke">#2D4A6B</color>
+    <color name="accent">#00D4FF</color>
+    <color name="textPrimary">#ECF4FF</color>
+    <color name="textSecondary">#A8BDD7</color>
+    <color name="priority_low">#2E8B57</color>
+    <color name="priority_medium">#E49C22</color>
+    <color name="priority_high">#D64545</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+</resources>
